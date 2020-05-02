@@ -26,8 +26,20 @@ steps:
   - task: CMake@1
     inputs:
       workingDirectory: $(Build.BinariesDirectory)
-      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory) -DCMAKE_PREFIX_PATH=$(Build.BinariesDirectory)/Qt
+      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_PREFIX_PATH=$(Build.BinariesDirectory)/Qt/$(QtVersion)/msvc2017_64
+    displayName: 'Configure'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)
+      cmakeArgs: --build $(Build.BinariesDirectory)
     displayName: 'Build'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)
+      cmakeArgs: --install $(Build.BinariesDirectory) --prefix $(Build.ArtifactStagingDirectory)
+    displayName: 'Install'
 
   - task: PublishBuildArtifacts@1
     inputs:
