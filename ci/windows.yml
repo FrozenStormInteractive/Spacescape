@@ -6,9 +6,6 @@ steps:
     inputs:
       versionSpec: '3.x'
 
-  - script: |
-      python -m pip install requests
-
   - task: PythonScript@0
     inputs:
       scriptSource: 'filePath'
