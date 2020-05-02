@@ -97,14 +97,8 @@ void QtOgreWidget::configure(void) {
     #endif
 #endif
 	if (!mOgreRoot->restoreConfig()) {
-		// setup a renderer
-		Ogre::RenderSystemList renderers = mOgreRoot->getAvailableRenderers();
-		assert(!renderers.empty()); // we need at least one renderer to do anything useful
-		
-		//Ogre::RenderSystem *renderSystem = chooseRenderer(renderers);
-		// TODO: does this work right?
-		Ogre::RenderSystem *renderSystem = *renderers.begin();
-		assert(renderSystem); // user might pass back a null renderer, which would be bad!
+        Ogre::RenderSystem *renderSystem = mOgreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
+        OgreAssert(renderSystem, "OpenGL RenderSystem must be available");
 		
 		mOgreRoot->setRenderSystem(renderSystem);
 		QString dimensions = QString("%1x%2").arg(width()).arg(height());

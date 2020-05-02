@@ -158,17 +158,9 @@ the Spacescape Ogre plugin
 Ogre::SpacescapePlugin* QtSpacescapeWidget::getPlugin()
 {
     if(!mRenderWindow) return NULL;
-    
-    //std::vector<Ogre::Plugin*> pl = Ogre::Root::getSingleton().getInstalledPlugins();
-	Ogre::Root::PluginInstanceList pl = Ogre::Root::getSingleton().getInstalledPlugins();
-	Ogre::Root::PluginInstanceList::iterator ii = pl.begin();
-    for(ii = pl.begin(); ii != pl.end(); ii++) {
-        if((*ii)->getName() == "Spacescape") {
-            return (Ogre::SpacescapePlugin*)(*ii);
-        }
-    }
 
-    return NULL;
+    static SpacescapePlugin plugin;
+    return &plugin;
 }
 
 /** Handle a paint event (just render again, if needed create render window)
