@@ -11,27 +11,13 @@
 <h4 align="center">An awesome free & open-source tool for creating space skyboxes with stars and nebulas !</h4>
 
 <p align="center">
-  <a href="https://github.com/FrozenStormInteractive/spacescape/releases">
-    <img src="https://img.shields.io/github/v/release/FrozenStormInteractive/spacescape?sort=semver" alt="Gitter">
-  </a>
-  <a href="https://github.com/FrozenStormInteractive/spacescape/stargazers">
-    <img src="https://img.shields.io/github/stars/FrozenStormInteractive/spacescape.svg">
-  </a>
-  <a href="https://github.com/FrozenStormInteractive/spacescape/issues">
-      <img src="https://img.shields.io/github/issues/FrozenStormInteractive/spacescape.svg">
-  </a>
-  <a href="https://github.com/FrozenStormInteractive/spacescape/pulls">
-    <img src="https://img.shields.io/github/issues-pr/FrozenStormInteractive/spacescape">
-  </a>
-  <a href="https://github.com/FrozenStormInteractive/spacescape/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors-anon/FrozenStormInteractive/spacescape.svg">
-  </a>
-  <a href="https://github.com/FrozenStormInteractive/spacescape/issues">
-    <img src="https://img.shields.io/badge/contributions-welcome-orange.svg">
-  </a>
-  <a href="License.md">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg">
-  </a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/releases"><img src="https://img.shields.io/github/v/release/FrozenStormInteractive/spacescape?sort=semver" alt="Gitter"></a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/stargazers"><img src="https://img.shields.io/github/stars/FrozenStormInteractive/spacescape.svg"></a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/issues"><img src="https://img.shields.io/github/issues/FrozenStormInteractive/spacescape.svg"></a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/pulls"><img src="https://img.shields.io/github/issues-pr/FrozenStormInteractive/spacescape"></a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/graphs/contributors"><img src="https://img.shields.io/github/contributors-anon/FrozenStormInteractive/spacescape.svg"></a>
+  <a href="https://github.com/FrozenStormInteractive/spacescape/issues"><img src="https://img.shields.io/badge/contributions-welcome-orange.svg"></a>
+  <a href="License.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
 
 ## Table of Contents
@@ -47,8 +33,8 @@
 
 | Branch  | Windows | Linux | macOS |
 |:-------:|:-------:|:-----:|:-----:|
-| Master | ![Azure DevOps builds (job)](Build Status Master Windows) | ![Azure DevOps builds (job)](Build Status Master Linux) | ![Azure DevOps builds (job)](Build Status Master macOS) |
-| Develop | ![Azure DevOps builds (job)](Build Status Develop Windows) | ![Azure DevOps builds (job)](Build Status Develop Linux) | ![Azure DevOps builds (job)](Build Status Develop macOS) |
+| Master | ![Master branch build status on Windows][Build Status Master Windows] | ![Master branch build status on Linux][Build Status Master Linux] | ![Master branch build status on macOS][Build Status Master macOS] |
+| Develop | ![Develop branch build status on Windows][Build Status Develop Windows] | ![Develop branch build status on Linux][Build Status Develop Linux] | ![Develop branch build status on macOS][Build Status Develop macOS] |
 
 ***WIP***
 
