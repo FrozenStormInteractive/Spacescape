@@ -4,7 +4,7 @@ set(CMAKE_AUTOUIC ON)
 
 add_subdirectory(external/QtPropertyBrowser5)
 
-INCLUDE_DIRECTORIES(../SpacescapePlugin/include/)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SpacescapeVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapeVersion.h)
 
 set(SPC_SOURCES src/Main.cpp
         src/QtSpacescapeAboutDialog.cpp
@@ -38,7 +38,7 @@ qt5_add_resources(SPC_SOURCES ${SPC_RESOURCES})
 add_executable(Spacescape ${SPC_SOURCES} ${SPC_HEADERS} ${SPC_RESOURCES})
 
 target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser OgreMain)
-target_include_directories(Spacescape PUBLIC include)
+target_include_directories(Spacescape PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 file(GLOB_RECURSE MEDIA media/*)
 source_group("media/materials/textures" FILES ${MEDIA})
