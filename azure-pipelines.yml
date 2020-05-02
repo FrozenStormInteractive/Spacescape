@@ -4,12 +4,16 @@ trigger:
   - release/*
   - features/*
 
+variables:
+  QtVersion: 5.12.8
+
 jobs:
   - job: MacOS
     strategy:
       matrix:
         mac:
           imageName: 'macOS-latest'
+          XCodeVersion: 11.4.1
     pool:
       vmImage: $(imageName)
     steps:
@@ -19,6 +23,7 @@ jobs:
       matrix:
         windows:
           imageName: 'windows-latest'
+          QtWinArch: win_msvc2019
     pool:
       vmImage: $(imageName)
     steps:
@@ -26,7 +31,7 @@ jobs:
   - job: Linux
     strategy:
       matrix:
-        mac:
+        linux:
           imageName: 'ubuntu-latest'
     pool:
       vmImage: $(imageName)
