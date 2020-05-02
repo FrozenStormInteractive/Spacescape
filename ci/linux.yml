@@ -6,7 +6,7 @@ steps:
       sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu focal universe'
 
   - script: |
-      sudo apt install -y libogre
+      sudo apt install -y libogre-1.12-dev
 
   - task: UsePythonVersion@0
     inputs:
