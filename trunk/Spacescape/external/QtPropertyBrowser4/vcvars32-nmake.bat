@@ -1,1 +1,0 @@
-vcvars32.bat && nmake
