@@ -8,16 +8,16 @@ variables:
   QtVersion: 5.12.8
 
 jobs:
-  - job: MacOS
-    strategy:
-      matrix:
-        mac:
-          imageName: 'macOS-latest'
-          XCodeVersion: 11.4.1
-    pool:
-      vmImage: $(imageName)
-    steps:
-      - template: ci/macos.yml
+#  - job: MacOS
+#    strategy:
+#      matrix:
+#        mac:
+#          imageName: 'macOS-latest'
+#          XCodeVersion: 11.4.1
+#    pool:
+#      vmImage: $(imageName)
+#    steps:
+#      - template: ci/macos.yml
   - job: Windows
     strategy:
       matrix:
@@ -28,12 +28,12 @@ jobs:
       vmImage: $(imageName)
     steps:
       - template: ci/windows.yml
-  - job: Linux
-    strategy:
-      matrix:
-        linux:
-          imageName: 'ubuntu-latest'
-    pool:
-      vmImage: $(imageName)
-    steps:
-      - template: ci/linux.yml
+#  - job: Linux
+#    strategy:
+#      matrix:
+#        linux:
+#          imageName: 'ubuntu-latest'
+#    pool:
+#      vmImage: $(imageName)
+#    steps:
+#      - template: ci/linux.yml
