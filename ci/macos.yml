@@ -1,0 +1,31 @@
+steps:
+  - checkout: self
+    submodules: true
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - script: |
+      /bin/bash -c "sudo xcode-select -s /Applications/Xcode_$(XCodeVersion).app/Contents/Developer"
+    displayName: 'Select Xcode $(XCodeVersion)'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      python -m pip install aqtinstall
+    displayName: 'Install aqtinstall'
+
+  - script: |
+      python -m aqt install --outputdir $(Build.BinariesDirectory)/Qt $(QtVersion) mac desktop -m qtcore qtgui qtxml qtwidgets
+    displayName: 'Install Qt $(QtVersion)'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)
+      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory) -DCMAKE_PREFIX_PATH=$(Build.BinariesDirectory)/Qt
+    displayName: 'Build'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: MacOS_build

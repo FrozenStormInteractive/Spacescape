@@ -1,0 +1,39 @@
+trigger:
+  - master
+  - develop
+  - release/*
+  - features/*
+
+variables:
+  QtVersion: 5.12.8
+
+jobs:
+#  - job: MacOS
+#    strategy:
+#      matrix:
+#        mac:
+#          imageName: 'macOS-latest'
+#          XCodeVersion: 11.4.1
+#    pool:
+#      vmImage: $(imageName)
+#    steps:
+#      - template: ci/macos.yml
+  - job: Windows
+    strategy:
+      matrix:
+        windows:
+          imageName: 'windows-latest'
+          QtWinArch: win64_msvc2017_64
+    pool:
+      vmImage: $(imageName)
+    steps:
+      - template: ci/windows.yml
+#  - job: Linux
+#    strategy:
+#      matrix:
+#        linux:
+#          imageName: 'ubuntu-latest'
+#    pool:
+#      vmImage: $(imageName)
+#    steps:
+#      - template: ci/linux.yml
