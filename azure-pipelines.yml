@@ -1,0 +1,34 @@
+trigger:
+  - master
+  - develop
+  - release/*
+  - features/*
+
+jobs:
+  - job: MacOS
+    strategy:
+      matrix:
+        mac:
+          imageName: 'macOS-latest'
+    pool:
+      vmImage: $(imageName)
+    steps:
+      - template: ci/macos.yml
+  - job: Windows
+    strategy:
+      matrix:
+        windows:
+          imageName: 'windows-latest'
+    pool:
+      vmImage: $(imageName)
+    steps:
+      - template: ci/windows.yml
+  - job: Linux
+    strategy:
+      matrix:
+        mac:
+          imageName: 'ubuntu-latest'
+    pool:
+      vmImage: $(imageName)
+    steps:
+      - template: ci/linux.yml

@@ -1,0 +1,34 @@
+steps:
+  - checkout: self
+    submodules: true
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      python -m pip install aqtinstall
+    displayName: 'Install aqtinstall'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      python -m aqt install --outputdir $(Build.BinariesDirectory)\\Qt 5.12.8 windows desktop win_msvc2019 -m qtcore qtgui qtxml qtwidgets
+    displayName: 'Install Qt 5.12.8'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+      $(Build.BinariesDirectory)\\Qt\\5.12.8\\msvc2019\\bin\\qmake.exe
+    displayName: 'Run qmake'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)
+    displayName: 'Build'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: Windows_build
