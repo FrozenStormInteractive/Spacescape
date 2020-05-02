@@ -32,4 +32,6 @@ target_link_libraries(QtPropertyBrowser PUBLIC Qt5::Widgets)
 
 generate_export_header(QtPropertyBrowser)
 
-install(TARGETS QtPropertyBrowser RUNTIME DESTINATION .)
+if(BUILD_SHARED_LIBS)
+	install(TARGETS QtPropertyBrowser RUNTIME DESTINATION .)
+endif()
