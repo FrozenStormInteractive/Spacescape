@@ -23,7 +23,7 @@ jobs:
       matrix:
         windows:
           imageName: 'windows-latest'
-          QtWinArch: win_msvc2019
+          QtWinArch: win64_msvc2019_64
     pool:
       vmImage: $(imageName)
     steps:
