@@ -31,19 +31,8 @@ THE SOFTWARE.
 #include <QDir>
 #include "QtSpacescapeMainWindow.h"
 
-#ifdef WIN32
-#ifdef _DEBUG
 int main(int argc, char *argv[]) {
-#else
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd) {
-	int argc = 0;
-	char** argv = 0;
-#endif
-
-#else
-int main(int argc, char *argv[]) {
-#endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QDir dir(argv[0]);
     dir.cdUp();
     dir.cdUp();
@@ -51,6 +40,7 @@ int main(int argc, char *argv[]) {
     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
     printf("after change, libraryPaths=(%s)\n", QCoreApplication::libraryPaths().join(",").toUtf8().data());
 #endif
+
     QApplication app(argc, argv);
     QtSpacescapeMainWindow w;
     w.show();
