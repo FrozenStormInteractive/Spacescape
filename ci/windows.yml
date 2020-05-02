@@ -9,7 +9,7 @@ steps:
   - task: PythonScript@0
     inputs:
       scriptSource: 'filePath'
-      scriptPath: $(Build.SourcesDirectory)/ci/ogreinstaller.py
+      scriptPath: $(Build.SourcesDirectory)/ci/ogrewininstaller.py
       workingDirectory: $(Build.SourcesDirectory)
     displayName: 'Install Ogre'
 
