@@ -59,3 +59,25 @@ IF(APPLE)
 ENDIF()
 
 install(TARGETS Spacescape RUNTIME DESTINATION .)
+
+
+if(WIN32 AND NOT OGRE_STATIC)
+    install(FILES $<TARGET_FILE:Qt5::Core> DESTINATION .)
+    install(FILES $<TARGET_FILE:Qt5::Gui> DESTINATION .)
+    install(FILES $<TARGET_FILE:Qt5::Widgets> DESTINATION .)
+
+    if(NOT OGRE_STATIC)
+        install(FILES $<TARGET_FILE:OgreMain> DESTINATION .)
+        install(FILES $<TARGET_FILE:OgreBitesQt> DESTINATION .)
+
+        foreach(COMPONENT ${OGRE_COMPONENTS})
+            install(FILES $<TARGET_FILE:${OGRE_${COMPONENT}_LIBRARIES}> DESTINATION .)
+        endforeach()
+
+        foreach(X ${OGRE_PLUGINS})
+            install(FILES ${OGRE_PLUGIN_DIR}/${X}${CMAKE_SHARED_LIBRARY_SUFFIX} DESTINATION .)
+        endforeach()
+
+        install(FILES ${OGRE_PLUGIN_DIR}/zlib${CMAKE_SHARED_LIBRARY_SUFFIX} DESTINATION .)
+    endif()
+endif()
