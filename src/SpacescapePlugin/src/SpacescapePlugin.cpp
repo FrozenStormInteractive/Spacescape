@@ -712,7 +712,7 @@ namespace Ogre
 			// Wrap as a stream
             DataStreamPtr stream(OGRE_NEW FileStreamDataStream(filename, &fs, false));
             bool result = loadConfigFile(stream);
-            stream.setNull();
+            stream = nullptr;
             fs.close();
 
             return result;
@@ -723,7 +723,7 @@ namespace Ogre
 			DataStreamPtr stream = 
 				ResourceGroupManager::getSingleton().openResource(filename, 
 					ResourceGroupManager::getSingleton().getWorldResourceGroupName());
-            if(stream.isNull()) {
+            if(stream = nullptr) {
                 LogManager::getSingleton().getDefaultLog()->logMessage("Empty config file: " + filename);
                 return false;
             }
@@ -1172,7 +1172,7 @@ namespace Ogre
         bool createTexture = false;
 
         TexturePtr rtt = TextureManager::getSingleton().getByName("SpacescapeRTT");
-        if(rtt.isNull()) {
+        if(rtt == nullptr) {
             createTexture = true;
         }
         else {
@@ -1412,7 +1412,7 @@ namespace Ogre
     {
         // create the material if it doesn't exist already
         MaterialPtr m = MaterialManager::getSingleton().getByName(materialName);
-        if(m.isNull()) {
+        if(m == nullptr) {
             m = MaterialManager::getSingleton().create(materialName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         }
 
@@ -1424,7 +1424,7 @@ namespace Ogre
     */
     void SpacescapePlugin::writeToMaterial(MaterialPtr& mat, unsigned int size)
     {
-        if(mat.isNull()) {
+        if(mat == nullptr) {
             return;
         }
 

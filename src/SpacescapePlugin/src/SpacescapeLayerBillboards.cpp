@@ -89,7 +89,7 @@ namespace Ogre
         mSourceBlendFactor(SBF_ONE),
         mStarDataFilename("")
     {
-        mMaterial.setNull();
+        mMaterial = nullptr;
         mTextureName = "default.png";
     }
 
@@ -167,7 +167,7 @@ namespace Ogre
 
         // remove the old noise texture if it exists (new one might be diff size due to layer switch ups)
         TexturePtr t = TextureManager::getSingleton().getByName("SpacescapeBillboardMask");
-        if(!t.isNull()) {
+        if(t != nullptr) {
             TextureManager::getSingleton().remove(t->getHandle());
         }
 
@@ -627,7 +627,7 @@ namespace Ogre
     void SpacescapeLayerBillboards::updateMaterial(void)
     {
         // get our unique material
-        if(mMaterial.isNull()) {
+        if(mMaterial == nullptr) {
             // create the material
             mMaterial = MaterialManager::getSingletonPtr()->create(
                 "SpacescapeBillboardMat" + StringConverter::toString(mUniqueID),
@@ -690,7 +690,7 @@ namespace Ogre
 		}
 
 		// load texture if not loaded yet
-		if (!relativeTextureName.empty() && TextureManager::getSingleton().getByName(relativeTextureName).isNull()) {
+		if (!relativeTextureName.empty() && TextureManager::getSingleton().getByName(relativeTextureName) == nullptr) {
             try {
 				if (index_of_slash != std::string::npos) {
 					std::ifstream ifs(mTextureName.c_str(), std::ios::binary | std::ios::in);
@@ -748,7 +748,7 @@ namespace Ogre
             }
         }
 
-		if (!relativeTextureName.empty() && !TextureManager::getSingleton().getByName(relativeTextureName).isNull()) {
+		if (!relativeTextureName.empty() && !(TextureManager::getSingleton().getByName(relativeTextureName) == nullptr)) {
 			mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(relativeTextureName);
         }
 

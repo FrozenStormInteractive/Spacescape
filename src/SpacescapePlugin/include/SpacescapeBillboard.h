@@ -32,7 +32,7 @@
 //#include "OgrePrerequisites.h"
 #include "SpacescapePrerequisites.h"
 //#include "SpacescapeBillboardSet.h"
-#include "OgreVector3.h"
+#include "Ogre.h"
 #include "OgreColourValue.h"
 #include "OgreCommon.h"
 //#include "OgreHeaderPrefix.h"

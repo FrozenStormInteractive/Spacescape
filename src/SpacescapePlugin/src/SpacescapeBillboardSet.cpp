@@ -309,7 +309,7 @@ namespace Ogre {
         
         mMaterial = MaterialManager::getSingleton().getByName(name, groupName);
         
-        if (mMaterial.isNull())
+        if (mMaterial == nullptr)
             OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find material " + name,
                         "SpacescapeBillboardSet::setMaterialName" );
         
@@ -649,7 +649,7 @@ namespace Ogre {
     {
         mMaterial = material;
         
-        if (mMaterial.isNull())
+        if (mMaterial == nullptr)
         {
             LogManager::getSingleton().logMessage("Can't assign material "
                                                   " to SpacescapeBillboardSet of " + getName() + " because this "
@@ -658,7 +658,7 @@ namespace Ogre {
             
             mMaterial = MaterialManager::getSingleton().getByName("BaseWhite");
             
-            if (mMaterial.isNull())
+            if (mMaterial == nullptr)
             {
                 OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't assign default material "
                             "to SpacescapeBillboardSet " + getName() + ". Did "
@@ -888,7 +888,7 @@ namespace Ogre {
             mIndexData = 0;
         }
         
-        mMainBuf.setNull();
+        mMainBuf = nullptr;
         
         mBuffersCreated = false;
         
