@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://github.com/FrozenStormInteractive/spacescape">
-    <img src="assets/logo.png" alt="Logo" width="150">
+    <img src="assets/logo.svg" alt="Logo" width="150">
    </a>
   <br>
   Spacescape
