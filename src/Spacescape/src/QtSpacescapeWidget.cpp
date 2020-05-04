@@ -40,86 +40,64 @@ using namespace Ogre;
 
 const float QtSpacescapeWidget::mRADIUS = (float)0.8;
 
-/** Constructor
-*/
-QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QtOgreWidget(parent,0),
-    mProgressListener(0),
-    mTimer(0) {
-	mSceneMgr = NULL;
-	mViewPort = NULL;
+QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QWidget(parent, Qt::WindowType::Widget),
+    mProgressListener(nullptr),
+    mOgreCtx("Spacescape")
+{
+	mSceneMgr = nullptr;
+	mViewPort = nullptr;
 	mMousePressed = false;
+
+    setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_NativeWindow);
+    setAttribute(Qt::WA_PaintOnScreen);
 }
 
-/** Destructor
-*/
-QtSpacescapeWidget::~QtSpacescapeWidget(void) {
-}
-
-/** Add a SpacescapeLayer
-@param type Layer type (0 - points, 1 billboards, 2 noise)
-@param params Layer params
-@return layerId or -1 on failure
-*/
 int QtSpacescapeWidget::addLayer(int type, const Ogre::NameValuePairList& params)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->addLayer(type, params);
+        int ret = plugin->addLayer(type, params);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return -1;
 }
 
-/** Clear all SpacescapeLayers
-*/
 void QtSpacescapeWidget::clearLayers()
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->clear();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-/** Copy a SpacescapeLayer
-@param layerID Layer ID of the layer to copy
-@return layerId of the new layer or -1 on failure
-*/
 int QtSpacescapeWidget::copyLayer(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->duplicateLayer(layerID);
+        int ret = plugin->duplicateLayer(layerID);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return -1;
 }
 
-/** Create Ogre scene
-*/
-void QtSpacescapeWidget::createScene(void) {
-	mSceneMgr->setAmbientLight(Ogre::ColourValue(0,0,0,0));
-}
-
-/** Delete a SpacescapeLayer
-@param layerID Layer ID of the layer to delete
-@return true on success
-*/
 bool QtSpacescapeWidget::deleteLayer(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->deleteLayer(layerID);
+        bool ret = plugin->deleteLayer(layerID);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return false;
 }
 
-/** Write the current spacescape to a skybox
-@param filename Name of the file (with path)
-@param imageSize The size of the image in pixels
-@param cubeMap Whether to write a single cubemap or not
-@return true on success
-*/
 bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imageSize, bool cubeMap, int orientation)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
@@ -136,9 +114,6 @@ bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imag
     return false;
 }
 
-/** Get current SpacescapeLayers list
-@return current SpacescapeLayers list
-*/
 std::vector<Ogre::SpacescapeLayer *> QtSpacescapeWidget::getLayers()
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
@@ -151,42 +126,29 @@ std::vector<Ogre::SpacescapeLayer *> QtSpacescapeWidget::getLayers()
     return layers;
 }
 
-/** Utility function for getting a pointer to 
-the Spacescape Ogre plugin
-@return the spacescape plugin or NULL
-*/
 Ogre::SpacescapePlugin* QtSpacescapeWidget::getPlugin()
 {
-    if(!mRenderWindow) return NULL;
+    if(!mOgreCtx.getRoot()) {
+        return nullptr;
+    }
 
     static SpacescapePlugin plugin;
     return &plugin;
 }
 
-/** Handle a paint event (just render again, if needed create render window)
-@param e The event data
-*/
-void QtSpacescapeWidget::paintEvent(QPaintEvent *e) {
-    //QtOgreWidget::paintEvent(e);
-    
-	if(!mRenderWindow && !mTimer) {
-        // probly don't really need this timer
-        QTimer::singleShot(0, this, SLOT(initRenderWindow()));
-	}
+void QtSpacescapeWidget::paintEvent(QPaintEvent *e)
+{
+    if(!mOgreCtx.getRoot()) {
+        mOgreCtx.injectMainWindow(windowHandle());
+        mOgreCtx.useQtEventLoop(true);
+        mOgreCtx.initApp();
 
-	update();
-}
-
-void QtSpacescapeWidget::initRenderWindow() {
-    if(!mRenderWindow) {
+        setupResources();
+        setupScene();
         show();
-		//resize(800,600);
-		createRenderWindow();
-		setupResources();
-		setupScene();
-        
-        update();        
     }
+
+    mOgreCtx.getRoot()->renderOneFrame();
 }
 
 bool QtSpacescapeWidget::isHDREnabled()
@@ -194,10 +156,8 @@ bool QtSpacescapeWidget::isHDREnabled()
     return pluginReady() ? getPlugin()->isHDREnabled() : false;
 }
 
-/** The user moved the mouse, if tracking process it
-@param e The event data
-*/
-void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e) {
+void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e)
+{
     if (mMousePressed) {
         QPoint curPos = e->pos();
 		
@@ -228,10 +188,11 @@ void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e) {
         v1.normalise();
         v2.normalise();
         double cosAngle = v1.dotProduct(v2);
-        if (cosAngle < -1.0)
+        if (cosAngle < -1.0) {
             cosAngle = -1.0;
-        else if(cosAngle > 1.0)
+        } else if(cosAngle > 1.0) {
             cosAngle = 1.0;
+        }
         double angle = acos(cosAngle);
 		
         mCameraNode->rotate(cross, Ogre::Radian(angle));
@@ -239,59 +200,49 @@ void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e) {
         mMousePressPos = curPos;
         mLastCamOrientation = mCameraNode->getOrientation();
 
-        update();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-/** The user pressed a mouse button, start tracking
-@param e The event data
-*/
-void QtSpacescapeWidget::mousePressEvent(QMouseEvent *e) {
+void QtSpacescapeWidget::mousePressEvent(QMouseEvent *e)
+{
     mMousePressPos = e->pos();
-	if (mCameraNode)
-		mLastCamOrientation = mCameraNode->getOrientation();
+	if (mCameraNode) {
+        mLastCamOrientation = mCameraNode->getOrientation();
+	}
+
     mMousePressed = true;
 }
 
-/** The user released a mouse button, stop tracking
-@param e The event data
-*/
-void QtSpacescapeWidget::mouseReleaseEvent(QMouseEvent *) {
+void QtSpacescapeWidget::mouseReleaseEvent(QMouseEvent *)
+{
     mMousePressed = false;
 }
 
-/** Move a SpacescapeLayer down in the list
-@param layerID The layer ID of the layer to move
-@return true on success
-*/
 bool QtSpacescapeWidget::moveLayerDown(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->moveLayer(layerID,-1);
+        bool ret = plugin->moveLayer(layerID,-1);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return false;
 }
 
-/** Move a SpacescapeLayer up in the list
-@param layerID The layer ID of the layer to move
-@return true on success
-*/
 bool QtSpacescapeWidget::moveLayerUp(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->moveLayer(layerID,1);
+        bool ret = plugin->moveLayer(layerID,1);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return false;
 }
 
-/** Open a Spacescape .xml file
-@param filename The name of the file to open (with path)
-@return true on success
-*/
 bool QtSpacescapeWidget::open(const QString& filename)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
@@ -305,35 +256,26 @@ bool QtSpacescapeWidget::open(const QString& filename)
     return false;
 }
 
-/** Return true if plugin is ready
- @return true on success
- */
 bool QtSpacescapeWidget::pluginReady()
 {
-    return getPlugin() != NULL;
+    return getPlugin() != nullptr;
 }
 
-/** Handle a resize event (pass it along to the render window)
-@param e The event data
-*/
 void QtSpacescapeWidget::resizeEvent(QResizeEvent *e) {
     if(e->size() == e->oldSize()) {
         return;
     }
 
-	QtOgreWidget::resizeEvent(e);
-    
-	if (mRenderWindow) {
-		// Alter the camera aspect ratio to match the viewport
-		mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
-		mViewPort->update();
-	}
+    if (mOgreCtx.getRoot()) {
+        // Alter the camera aspect ratio to match the viewport
+        mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
+    }
+
+    //QTimer::singleShot(30, windowHandle(), SLOT(requestUpdate()));
+
+    QWidget::resizeEvent(e);
 }
 
-/** Save a Spacescape .xml file
-@param filename The name of the file to save (with path)
-@return true on success
-*/
 bool QtSpacescapeWidget::save(const QString& filename)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
@@ -349,6 +291,7 @@ void QtSpacescapeWidget::setDebugBoxVisible(bool visible)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setDebugBoxVisible(visible);
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
@@ -357,25 +300,22 @@ void QtSpacescapeWidget::setHDREnabled(bool enabled)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setHDREnabled(enabled);
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-/** Change the visibility of a SpacescapeLayer
-@param layerID The layer ID of the layer to show/hide
-@param visible Visibility flag
-*/
 void QtSpacescapeWidget::setLayerVisible(unsigned int layerID, bool visible)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setLayerVisible(layerID,visible);
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-/** Set up Ogre resources
-*/
-void QtSpacescapeWidget::setupResources(void) {
-#ifdef Q_WS_MAC
+void QtSpacescapeWidget::setupResources()
+{
+#ifdef Q_OS_MAC
     Ogre::String resourcePath = Ogre::macBundlePath() + "/Contents/Resources/";
 #else
     Ogre::String resourcePath = "../";
@@ -383,84 +323,79 @@ void QtSpacescapeWidget::setupResources(void) {
     
 	// Load resource paths from config file
 	Ogre::ConfigFile config;
-        config.load(resourcePath + "resources.cfg");
-	
-	// Go through all sections & settings in the file
-	Ogre::ConfigFile::SectionIterator it = config.getSectionIterator();
-	
-	Ogre::String secName, typeName, archName;
-	while (it.hasMoreElements()) {
-		secName = it.peekNextKey();
-		Ogre::ConfigFile::SettingsMultiMap *settings = it.getNext();
-		Ogre::ConfigFile::SettingsMultiMap::iterator i;
-		
-		for (i = settings->begin(); i != settings->end(); ++i) {
-			typeName = i->first;
-			archName = i->second;
-#ifdef Q_WS_MAC
+    config.load(resourcePath + "resources.cfg");
+
+    const Ogre::ConfigFile::SettingsBySection_& sections = config.getSettingsBySection();
+
+    // Go through all sections & settings in the file
+    for (const auto& section : sections) {
+
+        Ogre::ConfigFile::SettingsMultiMap settings = section.second;
+
+        for (const auto& setting : settings) {
+            Ogre::String typeName = setting.first;
+            Ogre::String archName = setting.second;
+            Ogre::String secName;
+
+#ifdef Q_OS_MAC
             // OS X does not set the working directory relative to the app,
             // In order to make things portable on OS X we need to provide
             // the loading with it's own bundle path location
-            if (!Ogre::StringUtil::startsWith(archName, "/", false)) // only adjust relative dirs
+            if (!Ogre::StringUtil::startsWith(archName, "/", false)) { // only adjust relative dirs
                 archName = Ogre::String(resourcePath + archName);
+            }
 #endif
-			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
-		}
+
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
+        }
     }
+
+
+	
+	// Go through all sections & settings in the file
+
 }
 
-/** Setup the scene
-*/
-void QtSpacescapeWidget::setupScene(void) {
-	mSceneMgr = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC);
+void QtSpacescapeWidget::setupScene()
+{
+	mSceneMgr = Ogre::Root::getSingleton().createSceneManager();
 
-    mCameraNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-    mCameraNode->attachObject(mCamera);
-	
-	// Create the camera
-	mCamera = mSceneMgr->createCamera("PlayerCam");
-    mCameraNode->setPosition(Ogre::Vector3(0, 0, 0));
+    // Create the camera
+    mCamera = mSceneMgr->createCamera("PlayerCam");
     mCamera->setNearClipDistance(0.1f);
     mCamera->setFarClipDistance(10000.0f);
-	
-	// Create one viewport, entire window
-	mViewPort = mRenderWindow->addViewport(mCamera);
-	mViewPort->setBackgroundColour(Ogre::ColourValue(0,0,0));
-	mViewPort->setClearEveryFrame(true);
-	
-	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-	createScene();
-	
-	Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
-	Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
-	
-	// Alter the camera aspect ratio to match the viewport
-	mCamera->setAspectRatio(Ogre::Real(mViewPort->getActualWidth()) / Ogre::Real(mViewPort->getActualHeight()));
 
+    // Create one viewport, entire window
+    mViewPort = mOgreCtx.getRenderWindow()->addViewport(mCamera);
+    mViewPort->setBackgroundColour(Ogre::ColourValue(0,0,0));
+    mViewPort->setClearEveryFrame(true);
 
-    startTimer(200);
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+    // Populate scene
+    {
+        mSceneMgr->setAmbientLight(Ogre::ColourValue(0,0,0,0));
+    }
+
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_BILINEAR);
+    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
+
+    // Alter the camera aspect ratio to match the viewport
+    mCamera->setAspectRatio(Ogre::Real(mViewPort->getActualWidth()) / Ogre::Real(mViewPort->getActualHeight()));
+    mCameraNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    mCameraNode->attachObject(mCamera);
     
 //    Ogre::NameValuePairList params;
 //    addLayer(1, params);
 }
 
-/** Handle a timer event - calls update()
-@param e The event data
-*/
-void QtSpacescapeWidget::timerEvent(QTimerEvent *) {
-    update();
-}
-
-/** Update the params or a SpacescapeLayer
-@param layerID The layer ID of the layer to move
-@param params The new params
-@return true on success
-*/
 bool QtSpacescapeWidget::updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
-        return plugin->updateLayer(layerID,params);
+        bool ret = plugin->updateLayer(layerID,params);
+        mOgreCtx.getRoot()->renderOneFrame();
+        return ret;
     }
 
     return false;

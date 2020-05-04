@@ -34,8 +34,6 @@ THE SOFTWARE.
 #include <QLabel>
 #include <QCheckBox>
 
-#include "QtOgreWidgetOSX.h"
-
 struct QFileDialogArgs
 {
     QFileDialogArgs() : parent(0), mode(QFileDialog::AnyFile) {}

@@ -30,30 +30,30 @@ THE SOFTWARE.
 #ifndef QtSpacescapeWidget_H
 #define QtSpacescapeWidget_H
 
-#if defined(Q_WS_MAC)
-#include "QtOgreWidgetOSX.h"
-#else
-#include "QtOgreWidget.h"
-#endif
+#include <QWidget>
+
+#include <Ogre.h>
+#include <OgreApplicationContextQt.h>
+
 #include "SpacescapePlugin.h"
 #include "SpacescapeLayer.h"
 
-#include <QTimer>
-//using namespace QtOgre;
-
-/** QtSpacescapeWidget is a subclass of QtOgreWidget and it interacts
-with the Spacescape Ogre Plugin and Ogre.
-*/
-class QtSpacescapeWidget : public QtOgreWidget {
+/**
+ * QtSpacescapeWidget interacts with the Spacescape Ogre Plugin and Ogre.
+ */
+class QtSpacescapeWidget : public QWidget
+{
 	Q_OBJECT
 public:
-    /** Constructor
-    */
+    /**
+     * Constructor
+     */
 	QtSpacescapeWidget(QWidget* parent);
 
-    /** Destructor
-    */
-	~QtSpacescapeWidget(void);
+    /**
+     * Destructor
+     */
+	~QtSpacescapeWidget() = default;
     
     /** Add a SpacescapeLayer
     @param type Layer type (0 - points, 1 billboards, 2 noise)
@@ -144,53 +144,27 @@ public:
     @return true on success
     */
     bool updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params);
-    
-public slots:
-    
-    void initRenderWindow();
 
 protected:
-    /** Create Ogre scene
-    */
-	void createScene(void);
 
-    /** The user moved the mouse, if tracking process it
-    @param e The event data
-    */
-	void mouseMoveEvent(QMouseEvent *e);
+    /**
+     * Set up Ogre resources
+     */
+    void setupResources();
 
-    /** The user pressed a mouse button, start tracking
-    @param e The event data
-    */
-	void mousePressEvent(QMouseEvent *e);
+    /**
+     * Setup the scene
+     */
+    void setupScene();
 
-    /** The user released a mouse button, stop tracking
-    @param e The event data
-    */
-	void mouseReleaseEvent(QMouseEvent *e);
+	//Qt events
+	void mouseMoveEvent(QMouseEvent *e) override;
+	void mousePressEvent(QMouseEvent *e) override;
+	void mouseReleaseEvent(QMouseEvent *e) override;
+    void paintEvent(QPaintEvent *e) override;
+	void resizeEvent(QResizeEvent *e) override;
 
-    /** Handle a paint event (just render again, if needed create render window)
-    @param e The event data
-    */
-    virtual void paintEvent(QPaintEvent *e);
-
-    /** Handle a timer event - calls update()
-    @param e The event data
-    */
-    void timerEvent(QTimerEvent *e);
-
-    /** Handle a resize event (pass it along to the render window)
-    @param e The event data
-    */
-	void resizeEvent(QResizeEvent *e);
-
-    /** Set up Ogre resources
-    */
-    void setupResources(void);
-
-    /** Setup the scene
-    */
-    void setupScene(void);
+    inline QPaintEngine* paintEngine() const override { return nullptr; }
 
     // mouse pressed flag
 	bool mMousePressed;
@@ -202,22 +176,22 @@ protected:
 	Ogre::Quaternion mLastCamOrientation;
 
     // Ogre camera node
-	Ogre::SceneNode *mCameraNode;
+	Ogre::SceneNode* mCameraNode = nullptr;
 
     // Ogre scene manager
-	Ogre::SceneManager *mSceneMgr;
+	Ogre::SceneManager* mSceneMgr = nullptr;
 
     // Ogre camera
-	Ogre::Camera *mCamera;
+	Ogre::Camera* mCamera = nullptr;
 
     // Ogre viewport
-	Ogre::Viewport *mViewPort;
+	Ogre::Viewport* mViewPort = nullptr;
 
     // the radius used for rotating
 	static const float mRADIUS;
 
 private:
-    QTimer *mTimer;
+    OgreBites::ApplicationContextQt mOgreCtx;
     
     /** Utility function for getting a pointer to 
     the Spacescape Ogre plugin

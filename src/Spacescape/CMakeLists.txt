@@ -1,4 +1,4 @@
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
@@ -23,25 +23,19 @@ set(SPC_HEADERS include/QtSpacescapeAboutDialog.h
         include/QtSpacescapeWidget.h
         include/QtFilePathProperty.h)
 
-IF(APPLE)
-    list(APPEND SPC_SOURCES src/QtOgreWidgetOSX.cpp)
-    list(APPEND SPC_HEADERS include/QtOgreWidgetOSX.h)
-ELSE(APPLE)
-    list(APPEND SPC_SOURCES src/QtOgreWidget.cpp)
-    list(APPEND SPC_HEADERS include/QtOgreWidget.h)
-ENDIF(APPLE)
-
 set(SPC_RESOURCES Spacescape.qrc)
 
 qt5_add_resources(SPC_SOURCES ${SPC_RESOURCES})
 
 add_executable(Spacescape ${SPC_SOURCES} ${SPC_HEADERS} ${SPC_RESOURCES})
 
-target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser OgreMain)
+target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser OgreMain OgreBitesQt)
 target_include_directories(Spacescape PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 file(GLOB_RECURSE MEDIA media/*)
 source_group("media/materials/textures" FILES ${MEDIA})
+
+file(COPY ${OGRE_CONFIG_DIR}/plugins.cfg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 IF(APPLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME Spacescape)
@@ -58,26 +52,5 @@ IF(APPLE)
     set_target_properties(Spacescape PROPERTIES XCODE_ATTRIBUTE_OGRE_SDK_ROOT)
 ENDIF()
 
-install(TARGETS Spacescape RUNTIME DESTINATION .)
-
-
-if(WIN32 AND NOT OGRE_STATIC)
-    install(FILES $<TARGET_FILE:Qt5::Core> DESTINATION .)
-    install(FILES $<TARGET_FILE:Qt5::Gui> DESTINATION .)
-    install(FILES $<TARGET_FILE:Qt5::Widgets> DESTINATION .)
-
-    if(NOT OGRE_STATIC)
-        install(FILES $<TARGET_FILE:OgreMain> DESTINATION .)
-        install(FILES $<TARGET_FILE:OgreBitesQt> DESTINATION .)
-
-        foreach(COMPONENT ${OGRE_COMPONENTS})
-            install(FILES $<TARGET_FILE:${OGRE_${COMPONENT}_LIBRARIES}> DESTINATION .)
-        endforeach()
-
-        foreach(X ${OGRE_PLUGINS})
-            install(FILES ${OGRE_PLUGIN_DIR}/${X}${CMAKE_SHARED_LIBRARY_SUFFIX} DESTINATION .)
-        endforeach()
-
-        install(FILES ${OGRE_PLUGIN_DIR}/zlib${CMAKE_SHARED_LIBRARY_SUFFIX} DESTINATION .)
-    endif()
-endif()
+install(TARGETS Spacescape
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
