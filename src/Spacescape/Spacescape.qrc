@@ -9,5 +9,6 @@
         <file>resources/bullet_arrow_up.png</file>
         <file>resources/spacescape-logo.png</file>
 	    <file>resources/spacescape-logo.ico</file>
+        <file>resources/stylesheet.qss</file>
     </qresource>
 </RCC>

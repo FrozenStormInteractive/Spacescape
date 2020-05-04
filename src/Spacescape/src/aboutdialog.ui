@@ -45,7 +45,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="Spacescape.qrc">:/spacescape/images/spacescape-logo.png</pixmap>
+    <pixmap resource="Spacescape.qrc">:/spacescape/resources/spacescape-logo.png</pixmap>
    </property>
    <property name="alignment">
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

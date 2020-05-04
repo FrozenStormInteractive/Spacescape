@@ -90,7 +90,7 @@ public:
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         logo = new QLabel(AboutDialog);
         logo->setObjectName(QString::fromUtf8("logo"));
-        logo->setPixmap(QPixmap(QString::fromUtf8(":/spacescape/images/spacescape-logo.png")));
+        logo->setPixmap(QPixmap(QString::fromUtf8(":/spacescape/resources/spacescape-logo.png")));
         logo->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
 
         horizontalLayout_3->addWidget(logo);

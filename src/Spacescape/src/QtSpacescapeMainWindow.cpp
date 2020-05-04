@@ -67,6 +67,12 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     // setup the ui
     ui->setupUi(this);
 
+    QFile stylesheetFile(":/spacescape/resources/stylesheet.qss");
+    if (!stylesheetFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        setStyleSheet(stylesheetFile.readAll());
+    }
+
     // set the property manager to a variant type (changable/editable - not read only)
     mPropertyManager = new QtVariantPropertyManager();
     QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory();

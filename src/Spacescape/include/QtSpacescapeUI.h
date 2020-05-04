@@ -309,7 +309,7 @@ public:
         newLayer = new QPushButton(frame);
         newLayer->setObjectName(QString::fromUtf8("newLayer"));
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/spacescape/images/page_white_add.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/spacescape/resources/page_white_add.png"), QSize(), QIcon::Normal, QIcon::Off);
         newLayer->setIcon(icon);
 
         horizontalLayout->addWidget(newLayer);
@@ -317,7 +317,7 @@ public:
         copyLayer = new QPushButton(frame);
         copyLayer->setObjectName(QString::fromUtf8("copyLayer"));
         QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/spacescape/images/page_white_copy.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QString::fromUtf8(":/spacescape/resources/page_white_copy.png"), QSize(), QIcon::Normal, QIcon::Off);
         copyLayer->setIcon(icon1);
 
         horizontalLayout->addWidget(copyLayer);
@@ -325,7 +325,7 @@ public:
         moveLayerDown = new QPushButton(frame);
         moveLayerDown->setObjectName(QString::fromUtf8("moveLayerDown"));
         QIcon icon3;
-        icon3.addFile(QString::fromUtf8(":/spacescape/images/page_white_put.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon3.addFile(QString::fromUtf8(":/spacescape/resources/page_white_put.png"), QSize(), QIcon::Normal, QIcon::Off);
         moveLayerDown->setIcon(icon3);
 
         horizontalLayout->addWidget(moveLayerDown);
@@ -333,7 +333,7 @@ public:
         moveLayerUp = new QPushButton(frame);
         moveLayerUp->setObjectName(QString::fromUtf8("moveLayerUp"));
         QIcon icon4;
-        icon4.addFile(QString::fromUtf8(":/spacescape/images/page_white_get.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon4.addFile(QString::fromUtf8(":/spacescape/resources/page_white_get.png"), QSize(), QIcon::Normal, QIcon::Off);
         moveLayerUp->setIcon(icon4);
 
         horizontalLayout->addWidget(moveLayerUp);
@@ -345,7 +345,7 @@ public:
         deleteLayer = new QPushButton(frame);
         deleteLayer->setObjectName(QString::fromUtf8("deleteLayer"));
         QIcon icon2;
-        icon2.addFile(QString::fromUtf8(":/spacescape/images/page_white_delete.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QString::fromUtf8(":/spacescape/resources/page_white_delete.png"), QSize(), QIcon::Normal, QIcon::Off);
         deleteLayer->setIcon(icon2);
 
         horizontalLayout->addWidget(deleteLayer);
