@@ -1,0 +1,30 @@
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      python -m pip install aqtinstall
+    displayName: 'Install aqtinstall'
+
+  - script: |
+      cd $(Build.SourcesDirectory)
+      python -m aqt install --outputdir $(Agent.TempDirectory)/Qt $(QtVersion) mac desktop
+    displayName: 'Download Qt $(QtVersion)'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Agent.TempDirectory)/Qt/$(QtVersion)/clang_64
+      targetFolder: $(Build.ArtifactStagingDirectory)/Qt
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)/Qt
+      archiveType: tar
+      tarCompression: gz
+      archiveFile: $(Build.ArtifactStagingDirectory)/Qt.tar.gz
+    displayName: 'Compress Qt'
+
+  - publish: $(Build.ArtifactStagingDirectory)/Qt.tar.gz
+    artifact: QtMacOS

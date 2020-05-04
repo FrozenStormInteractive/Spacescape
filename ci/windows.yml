@@ -2,31 +2,36 @@ steps:
   - checkout: self
     submodules: true
 
-  - task: UsePythonVersion@0
+  - task: DownloadPipelineArtifact@2
     inputs:
-      versionSpec: '3.x'
+      artifact: OgreWindows
+      path: $(Agent.TempDirectory)
+    displayName: 'Checkout Ogre'
 
-  - task: PythonScript@0
+  - task: ExtractFiles@1
     inputs:
-      scriptSource: 'filePath'
-      scriptPath: $(Build.SourcesDirectory)/ci/ogrewininstaller.py
-      workingDirectory: $(Build.SourcesDirectory)
-    displayName: 'Install Ogre'
+      archiveFilePatterns: $(Agent.TempDirectory)/Ogre.tar.gz
+      destinationFolder: $(Build.SourcesDirectory)/libs
+      cleanDestinationFolder: false
+    displayName: 'Extract Ogre'
 
-  - script: |
-      cd $(Build.SourcesDirectory)
-      python -m pip install aqtinstall
-    displayName: 'Install aqtinstall'
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: QtWindows
+      path: $(Agent.TempDirectory)
+    displayName: 'Checkout Qt'
 
-  - script: |
-      cd $(Build.SourcesDirectory)
-      python -m aqt install --outputdir $(Build.BinariesDirectory)\\Qt $(QtVersion) windows desktop win64_$(QtWinArch) -m qtcore qtgui qtxml qtwidgets
-    displayName: 'Install Qt $(QtVersion)'
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: $(Agent.TempDirectory)/Qt.tar.gz
+      destinationFolder: $(Build.SourcesDirectory)/libs
+      cleanDestinationFolder: false
+    displayName: 'Extract Qt'
 
   - task: CMake@1
     inputs:
       workingDirectory: $(Build.BinariesDirectory)
-      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_PREFIX_PATH=$(Build.BinariesDirectory)/Qt/$(QtVersion)/$(QtWinArch) -DSPC_VERSION_BUILD=$(Build.SourceVersion)
+      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=MinSizeRel -DSPC_VERSION_BUILD=$(Build.SourceVersion)
     displayName: 'Configure'
 
   - task: CMake@1
@@ -41,7 +46,5 @@ steps:
       cmakeArgs: --install $(Build.BinariesDirectory) --prefix $(Build.ArtifactStagingDirectory) --config MinSizeRel
     displayName: 'Install'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: Windows_build
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: Windows_build

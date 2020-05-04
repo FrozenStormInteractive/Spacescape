@@ -2,32 +2,51 @@ steps:
   - checkout: self
     submodules: true
 
-  - script: |
-      sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu focal universe'
+  - script: sudo apt-get install mesa-common-dev libglu1-mesa-dev libzzip-dev
 
-  - script: |
-      sudo apt install -y libogre-1.12 libogre-1.12-dev
-
-  - task: UsePythonVersion@0
+  - task: DownloadPipelineArtifact@2
     inputs:
-      versionSpec: '3.x'
+      artifact: OgreLinux
+      path: $(Agent.TempDirectory)
+    displayName: 'Checkout Ogre'
 
-  - script: |
-      cd $(Build.SourcesDirectory)
-      python -m pip install aqtinstall
-    displayName: 'Install aqtinstall'
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: $(Agent.TempDirectory)/Ogre.tar.gz
+      destinationFolder: $(Build.SourcesDirectory)/libs
+      cleanDestinationFolder: false
+    displayName: 'Extract Ogre'
 
-  - script: |
-      python -m aqt install --outputdir $(Build.BinariesDirectory)/Qt $(QtVersion) linux desktop -m qtcore qtgui qtxml qtwidgets
-    displayName: 'Install Qt $(QtVersion)'
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: QtLinux
+      path: $(Agent.TempDirectory)
+    displayName: 'Checkout Qt'
+
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: $(Agent.TempDirectory)/Qt.tar.gz
+      destinationFolder: $(Build.SourcesDirectory)/libs
+      cleanDestinationFolder: false
+    displayName: 'Extract Qt'
 
   - task: CMake@1
     inputs:
       workingDirectory: $(Build.BinariesDirectory)
-      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory) -DCMAKE_PREFIX_PATH=$(Build.BinariesDirectory)/Qt
+      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=MinSizeRel -DSPC_VERSION_BUILD=$(Build.SourceVersion)
+    displayName: 'Configure'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)
+      cmakeArgs: --build $(Build.BinariesDirectory) --config MinSizeRel
     displayName: 'Build'
 
-  - task: PublishBuildArtifacts@1
+  - task: CMake@1
     inputs:
-      pathToPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: Linux_build
+      workingDirectory: $(Build.BinariesDirectory)
+      cmakeArgs: --install $(Build.BinariesDirectory) --prefix $(Build.ArtifactStagingDirectory) --config MinSizeRel
+    displayName: 'Install'
+
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: Linux_build

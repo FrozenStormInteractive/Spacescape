@@ -3,37 +3,118 @@ trigger:
   - develop
   - release/*
   - features/*
+  - hotfix/*
 
 variables:
   QtVersion: 5.12.8
+  OgreVersion: 1.12.6
 
-jobs:
-#  - job: MacOS
-#    strategy:
-#      matrix:
-#        mac:
-#          imageName: 'macOS-latest'
-#          XCodeVersion: 11.4.1
-#    pool:
-#      vmImage: $(imageName)
-#    steps:
-#      - template: ci/macos.yml
-  - job: Windows
-    strategy:
-      matrix:
-        windows:
-          imageName: 'windows-latest'
-          QtWinArch: msvc2017_64
-    pool:
-      vmImage: $(imageName)
-    steps:
-      - template: ci/windows.yml
-#  - job: Linux
-#    strategy:
-#      matrix:
-#        linux:
-#          imageName: 'ubuntu-latest'
-#    pool:
-#      vmImage: $(imageName)
-#    steps:
-#      - template: ci/linux.yml
+stages:
+  - stage: Windows
+    dependsOn: []
+    jobs:
+      - job: OgreWindows
+        strategy:
+          matrix:
+            windows:
+              ImageName: 'windows-latest'
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/ogre/windows.yml
+      - job: QtWindows
+        strategy:
+          matrix:
+            windows:
+              ImageName: 'windows-latest'
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/qt/windows.yml
+      - job: SpacescapeWindows
+        dependsOn:
+          - OgreWindows
+          - QtWindows
+        strategy:
+          matrix:
+            windows:
+              imageName: 'windows-latest'
+              QtWinArch: msvc2017_64
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: ci/windows.yml
+
+  - stage: Linux
+    dependsOn: []
+    jobs:
+      - job: OgreLinux
+        strategy:
+          matrix:
+            linux:
+              ImageName: 'ubuntu-latest'
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/ogre/linux.yml
+
+      - job: QtLinux
+        strategy:
+          matrix:
+            linux:
+              ImageName: 'ubuntu-latest'
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/qt/linux.yml
+
+      - job: SpacescapeLinux
+        dependsOn:
+          - OgreLinux
+          - QtLinux
+        strategy:
+          matrix:
+            linux:
+              imageName: 'ubuntu-latest'
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: ci/linux.yml
+
+  - stage: MacOS
+    dependsOn: []
+    jobs:
+      - job: OgreMacOS
+        strategy:
+          matrix:
+            macos:
+              ImageName: 'macOS-latest'
+              XCodeVersion: 11.3.1
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/ogre/macos.yml
+
+      - job: QtMacOS
+        strategy:
+          matrix:
+            macos:
+              ImageName: 'macOS-latest'
+        pool:
+          vmImage: $(ImageName)
+        steps:
+          - template: ci/qt/macos.yml
+
+      - job: SpacescapeMacOS
+        dependsOn:
+          - OgreMacOS
+          - QtMacOS
+        strategy:
+          matrix:
+            mac:
+              imageName: 'macOS-latest'
+              XCodeVersion: 11.3.1
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - template: ci/macos.yml

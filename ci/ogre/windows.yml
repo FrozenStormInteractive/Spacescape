@@ -1,0 +1,32 @@
+steps:
+  - checkout: self
+    submodules: true
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: $(Build.SourcesDirectory)/ci/downloader.py
+      workingDirectory: $(Build.SourcesDirectory)
+      arguments: https://bintray.com/ogrecave/ogre/download_file?file_path=ogre-sdk-v$(OgreVersion)-vc15-x64.zip ogre-windows-bin.zip
+    displayName: 'Download'
+
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'ogre-windows-bin.zip'
+      destinationFolder: $(Agent.TempDirectory)/Ogre
+    displayName: 'Extract'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Agent.TempDirectory)/Ogre
+      archiveType: tar
+      tarCompression: gz
+      archiveFile: $(Build.ArtifactStagingDirectory)/Ogre.tar.gz
+    displayName: 'Compress'
+
+  - publish: $(Build.ArtifactStagingDirectory)/Ogre.tar.gz
+    artifact: OgreWindows

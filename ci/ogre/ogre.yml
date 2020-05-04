@@ -1,0 +1,29 @@
+steps:
+  - script: git clone --recursive --branch v$(OgreVersion) --depth 1 https://github.com/OGRECave/ogre.git $(Build.BinariesDirectory)/ThirdParty/Ogre-sources
+    displayName: 'Download sources'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/ThirdParty/Ogre
+      cmakeArgs: $(Build.BinariesDirectory)/ThirdParty/Ogre-sources -DCMAKE_BUILD_TYPE=MinSizeRel -DOGRE_BUILD_COMPONENT_PYTHON=OFF -DOGRE_BUILD_COMPONENT_JAVA=OFF -DOGRE_BUILD_COMPONENT_CSHARP=OFF -DOGRE_BUILD_TESTS=OFF -DOGRE_BUILD_SAMPLES=OFF -DOGRE_BUILD_TOOLS=OFF
+    displayName: 'Configure'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/ThirdParty/Ogre
+      cmakeArgs: --build $(Build.BinariesDirectory)/ThirdParty/Ogre --config MinSizeRel
+    displayName: 'Build'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/ThirdParty/Ogre
+      cmakeArgs: --install $(Build.BinariesDirectory)/ThirdParty/Ogre --prefix $(Agent.TempDirectory)/Ogre --config MinSizeRel
+    displayName: 'Install'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Agent.TempDirectory)/Ogre
+      archiveType: tar
+      tarCompression: gz
+      archiveFile: $(Build.ArtifactStagingDirectory)/Ogre.tar.gz
+    displayName: 'Compress'
