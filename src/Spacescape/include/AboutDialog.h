@@ -27,26 +27,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#ifndef DIALOG_H
-#define DIALOG_H
+#ifndef ABOUTDIALOG_H
+#define ABOUTDIALOG_H
 
 #include <QDialog>
 
-namespace Ui {
-    class QtSpacescapeAboutDialogUI;
+namespace spacescape
+{
+    namespace Ui
+    {
+        class AboutDialog;
+    }
+
+    class AboutDialog : public QDialog
+    {
+        Q_OBJECT
+    public:
+        AboutDialog(QWidget* parent = nullptr);
+
+        ~AboutDialog() override;
+
+    protected:
+        void changeEvent(QEvent* e) override;
+
+    private:
+        Ui::AboutDialog *ui;
+    };
 }
 
-class QtSpacescapeAboutDialog : public QDialog {
-	Q_OBJECT
-public:
-    QtSpacescapeAboutDialog(QWidget *parent = 0);
-    ~QtSpacescapeAboutDialog();
-
-protected:
-    void changeEvent(QEvent *e);
-
-private:
-    Ui::QtSpacescapeAboutDialogUI *ui;
-};
-
-#endif // DIALOG_H
+#endif // ABOUTDIALOG_H

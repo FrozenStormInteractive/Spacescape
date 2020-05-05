@@ -29,9 +29,12 @@ THE SOFTWARE.
 */
 #include <QApplication>
 #include <QDir>
-#include "QtSpacescapeMainWindow.h"
 
-int main(int argc, char *argv[]) {
+#include "SpacescapeVersion.h"
+#include "MainWindow.h"
+
+int main(int argc, char *argv[])
+{
 #ifdef Q_OS_MAC
     QDir dir(argv[0]);
     dir.cdUp();
@@ -41,8 +44,13 @@ int main(int argc, char *argv[]) {
     printf("after change, libraryPaths=(%s)\n", QCoreApplication::libraryPaths().join(",").toUtf8().data());
 #endif
 
+    QCoreApplication::setOrganizationName("Spacescape");
+    QCoreApplication::setOrganizationDomain("alexcpeterson.com");
+    QCoreApplication::setApplicationName("Spacescape");
+    QCoreApplication::setApplicationVersion(spacescape::VersionStr);
+
     QApplication app(argc, argv);
-    QtSpacescapeMainWindow w;
+    spacescape::MainWindow w;
     w.show();
 
     return app.exec();

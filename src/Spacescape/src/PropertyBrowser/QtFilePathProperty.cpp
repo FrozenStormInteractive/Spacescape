@@ -6,7 +6,7 @@
 //
 //
 
-#include "QtFilePathProperty.h"
+#include "PropertyBrowser/QtFilePathProperty.h"
 #include <QHBoxLayout>
 #include <QToolButton>
 #include <QFileDialog>

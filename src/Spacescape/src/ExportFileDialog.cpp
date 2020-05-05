@@ -27,51 +27,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "QtSpacescapeExportFileDialog.h"
+#include "ExportFileDialog.h"
 #include <QLayout>
-#include <QGridLayout>
 #include <QFileDialog>
 #include <QLabel>
-#include <QCheckBox>
 
-struct QFileDialogArgs
+using namespace spacescape;
+
+namespace spacescape
 {
-    QFileDialogArgs() : parent(0), mode(QFileDialog::AnyFile) {}
+    struct QFileDialogArgs
+    {
+        QFileDialogArgs() = default;
 
-    QWidget *parent;
-    QString caption;
-    QString directory;
-    QString selection;
-    QString filter;
-    QFileDialog::FileMode mode;
-    QFileDialog::Options options;
-};
+        QWidget* parent = nullptr;
+        QString caption;
+        QString directory;
+        QString selection;
+        QString filter;
+        QFileDialog::FileMode mode = QFileDialog::AnyFile;
+        QFileDialog::Options options = 0;
+    };
+}
 
-/** constructor
-*/
-QtSpacescapeExportFileDialog::QtSpacescapeExportFileDialog(QWidget *parent, Qt::WindowFlags f) :
-    QFileDialog(parent, f)
+ExportFileDialog::ExportFileDialog(QWidget *parent, Qt::WindowFlags f) : QFileDialog(parent, f)
 {
 }
-QtSpacescapeExportFileDialog::QtSpacescapeExportFileDialog(const QFileDialogArgs &args) :
+ExportFileDialog::ExportFileDialog(const QFileDialogArgs& args) :
     QFileDialog(args.parent, args.caption, args.directory, args.filter)
 {
 }
 
-/** destructor
-*/
-QtSpacescapeExportFileDialog::~QtSpacescapeExportFileDialog(void)
-{
-}
-
-QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
-                                   const QString &caption,
-                                   const QString &dir,
-                                   const QString &filter,
-                                   QString *selectedFilter,
-                                   Options options,
-                                   QString *imageSize,
-                                   QString *orientation)
+QString ExportFileDialog::getExportFileName(QWidget* parent, const QString& caption, const QString& dir, const QString& filter,
+                                            QString* selectedFilter, Options options, QString *imageSize, QString* orientation)
 {
     QString path;
 
@@ -88,7 +76,7 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     args.options = DontUseNativeDialog;
     
     // create a qt dialog
-    QtSpacescapeExportFileDialog dialog(args);
+    ExportFileDialog dialog(args);
 
     // add our widgets
     QLayout* l = dialog.layout();

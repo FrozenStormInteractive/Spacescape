@@ -49,7 +49,7 @@ THE SOFTWARE.
 #include <QWidget>
 #include <QProgressDialog>
 #include <QtTreePropertyBrowser>
-#include "QtSpacescapeWidget.h"
+#include "PreviewWidget.h"
 //#include "QtFilePathProperty.h"
 
 QT_BEGIN_NAMESPACE

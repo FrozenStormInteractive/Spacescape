@@ -9,11 +9,9 @@
 #ifndef __Spacescape__QtFilePathManager__
 #define __Spacescape__QtFilePathManager__
 
-#define QT_QTPROPERTYBROWSER_IMPORT
-
 #include <qtpropertybrowser.h>
 #include <QWidget>
-#include <qlineedit.h>
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 

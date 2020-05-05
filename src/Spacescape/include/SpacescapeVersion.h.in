@@ -1,0 +1,17 @@
+#ifndef SPC_VERSION_H
+#define SPC_VERSION_H
+
+namespace spacescape
+{
+    constexpr char* VersionStr = u8"@SPC_VERSION@";
+
+    constexpr char* VersionMajorStr = u8"@SPC_VERSION_MAJOR@";
+    constexpr int VersionMajorNumber = @SPC_VERSION_MAJOR@;
+    constexpr char* VersionMinorStr = u8"@SPC_VERSION_MINOR@";
+    constexpr int VersionMinorNumber = @SPC_VERSION_MINOR@;
+    constexpr char* VersionPatchStr = u8"@SPC_VERSION_PATCH@";
+    constexpr int VersionPatchNumber = @SPC_VERSION_PATCH@;
+    constexpr char* VersionBuildStr = u8"@SPC_VERSION_BUILD@";
+}
+
+#endif // SPC_VERSION_H

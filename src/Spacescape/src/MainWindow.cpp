@@ -27,35 +27,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "QtSpacescapeMainWindow.h"
-#include "QtSpacescapeUI.h"
+
+#include <QSettings>
+#include <QProgressDialog>
+#include <QFileDialog>
+
 #include "qtpropertymanager.h"
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
-#include "QFileDialog"
-#include <QProgressDialog>
-#include "QtSpacescapeExportFileDialog.h"
-#include "QtSpacescapeAboutDialog.h"
-#include <QSettings>
-#include "QtFilePathProperty.h"
+#include "PropertyBrowser/QtFilePathProperty.h"
 
-//#include "OGRE/Ogre.h"
+
 #include <Ogre.h>
 
-/** Constructor
-@param parent
-*/
-QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::QtSpacescapeUI),
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
+#include "AboutDialog.h"
+#include "ExportFileDialog.h"
+
+using namespace spacescape;
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+    ui(new Ui::MainWindow),
     mFilename(""),
     mRefreshing(false)
 {
     setAttribute(Qt::WA_NativeWindow);
-    
-	QCoreApplication::setOrganizationName("Spacescape");
-	QCoreApplication::setOrganizationDomain("alexcpeterson.com");
-	QCoreApplication::setApplicationName("Spacescape");
 
 	// we store last settings used in registry/settings
 	QSettings settings;
@@ -68,7 +65,7 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     QFile stylesheetFile(":/spacescape/resources/stylesheet.qss");
-    if (!stylesheetFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (stylesheetFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         setStyleSheet(stylesheetFile.readAll());
     }
@@ -94,19 +91,26 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     connect(ui->layerProperties, SIGNAL(currentItemChanged(QtBrowserItem*)),
             this,SLOT(currentItemChanged(QtBrowserItem*)));
 
-    // add a signal for when the open menu item is selected
-    connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(onOpen()));
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::createNew);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::openFile);
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::save);
+    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::saveAs);
 
-    // add a signal for when the save menu item is selected
-    connect(ui->action_Save, SIGNAL(triggered()), this, SLOT(onSave()));
 
-    // add a signal for when the save menu item is selected
-    connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(onSaveAs()));
+    connect(ui->actionExit, &QAction::triggered, this, &MainWindow::close);
+    connect(ui->actionExport, &QAction::triggered, this, &MainWindow::onExport);
 
-    // add a signal for when the about menu item is selected
-    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+    connect(ui->actionShowDebugBox, &QAction::triggered, this, &MainWindow::showDebugBox);
+    connect(ui->actionEnableHDR, &QAction::triggered, this, &MainWindow::enableHDR);
 
-    
+    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::showAboutDialog);
+
+    connect(ui->newLayerButton, &QAbstractButton::clicked, this, &MainWindow::createNewLayer);
+    connect(ui->copyLayerButton, &QAbstractButton::clicked, this, &MainWindow::copySelectedLayer);
+    connect(ui->deleteLayerButton, &QAbstractButton::clicked, this, &MainWindow::deleteSelectedLayer);
+    connect(ui->moveLayerDownButton, &QAbstractButton::clicked, this, &MainWindow::moveSelectedLayerDown);
+    connect(ui->moveLayerUpButton, &QAbstractButton::clicked, this, &MainWindow::moveSelectedLayerUp);
+
     mPropertyTitles["destBlendFactor"] = QString("Dest Blend Factor");
     mPropertyTitles["ditherAmount"] = QString("Dither Amount");
     mPropertyTitles["farColor"] = QString("Far Color");
@@ -156,14 +160,12 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mDebugLayerLoaded = false;
 }
 
-/** Destructor
-*/
-QtSpacescapeMainWindow::~QtSpacescapeMainWindow()
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
+void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
     if(!mDebugLayerLoaded &&
@@ -179,11 +181,7 @@ void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
     }
 }
 
-
-/** A change event was received
-@param e The event parameters
-*/
-void QtSpacescapeMainWindow::changeEvent(QEvent *e)
+void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
     switch (e->type()) {
@@ -195,12 +193,7 @@ void QtSpacescapeMainWindow::changeEvent(QEvent *e)
     }
 }
 
-/** Utility function for creating a property from a key/value pair
-@param key The key
-@param value The value
-@return the created QtProperty
-*/
-QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& key, const Ogre::String& value)
+QtVariantProperty* MainWindow::createProperty(const Ogre::String& key, const Ogre::String& value)
 {
     QStringList noiseTypes, layerTypes, blendTypes, textureSizes, billboardTextures;
     noiseTypes << "fbm" << "ridged";
@@ -283,11 +276,7 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
     return property;
 }
 
-/** Current selected layer property has changed so update the status bar
-with this property's tip if it has one.
-@param item The selected item
-*/
-void QtSpacescapeMainWindow::currentItemChanged(QtBrowserItem *item)
+void MainWindow::currentItemChanged(QtBrowserItem *item)
 {
     // a hack to prevent invalid item checking when moving layers around
     if(mRefreshing) return;
@@ -297,11 +286,7 @@ void QtSpacescapeMainWindow::currentItemChanged(QtBrowserItem *item)
     }
 }
 
-
-/** Utility function to convert a blend mode string to int
-@param param blend mode string like "one" or "dest_colour"
-*/
-int QtSpacescapeMainWindow::getBlendMode(const QString& param)
+int MainWindow::getBlendMode(const QString& param)
 {
     if (param == "one")
         return 0;
@@ -327,10 +312,7 @@ int QtSpacescapeMainWindow::getBlendMode(const QString& param)
         return 0;
 }
 
-/** Utility function to convert an ogre color to a string
-@param color String color with values between 0 and 1
-*/
-QColor QtSpacescapeMainWindow::getColor(const Ogre::String& color)
+QColor MainWindow::getColor(const Ogre::String& color)
 {
     // first convert to a colourvalue
     Ogre::ColourValue c = Ogre::StringConverter::parseColourValue(color);
@@ -342,11 +324,8 @@ QColor QtSpacescapeMainWindow::getColor(const Ogre::String& color)
     );
 }
 
-/** Utility function to convert an ogre color to a string
-@param color String color with values between 0 and 255
-*/
 #include <string>
-Ogre::ColourValue QtSpacescapeMainWindow::getColor(const QString& color)
+Ogre::ColourValue MainWindow::getColor(const QString& color)
 {
 	Ogre::StringVector vec = Ogre::StringUtil::split(color.toStdString());
     double scale = 1.0 / 255.0;
@@ -359,10 +338,7 @@ Ogre::ColourValue QtSpacescapeMainWindow::getColor(const QString& color)
     );
 }
 
-/** Utility function to convert an QColor color to a Ogre string
-@param color String color with values between 0 and 1
-*/
-Ogre::String QtSpacescapeMainWindow::getColor(QColor color)
+Ogre::String MainWindow::getColor(QColor color)
 {
     float scale = (float)1.0 / (float)255.0;
     return Ogre::StringConverter::toString(color.red() * scale) + " " +
@@ -371,10 +347,7 @@ Ogre::String QtSpacescapeMainWindow::getColor(QColor color)
         Ogre::StringConverter::toString(color.alpha() * scale);
 }
 
-/** Utility function to get the status tip for a property type
-@param prop - the property to get the status tip for
-*/
-QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& prop)
+QLatin1String MainWindow::getPropertyStatusTip(const Ogre::String& prop)
 {
     if(prop == "name") {
         return QLatin1String("Layer name. What? Spacescapelayer0 isn't descriptive enough for you?!");
@@ -440,11 +413,7 @@ QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& p
     }
 }
 
-/** Utility function to convert between string types and property names and titles
-For example you provied destBlendFactor and get Dest Blend Factor
-@param prop - the property to get the title for
-*/
-QString QtSpacescapeMainWindow::getPropertyTitle(const Ogre::String& prop)
+QString MainWindow::getPropertyTitle(const Ogre::String& prop)
 {
     if(mPropertyTitles[prop].isEmpty()) {
         return QString(prop.c_str());
@@ -454,11 +423,7 @@ QString QtSpacescapeMainWindow::getPropertyTitle(const Ogre::String& prop)
     }
 }
 
-/** Utility function to convert between string types and property names and titles
-For example you provide Dest Blend Factor and get destBlendFactor
-@param prop - the property to get the xml var for for
-*/
-Ogre::String QtSpacescapeMainWindow::getProperty(const QString& prop)
+Ogre::String MainWindow::getProperty(const QString& prop)
 {
     std::map<Ogre::String,QString>::iterator ii;
     for(ii = mPropertyTitles.begin(); ii != mPropertyTitles.end(); ii++) {
@@ -470,11 +435,7 @@ Ogre::String QtSpacescapeMainWindow::getProperty(const QString& prop)
     return Ogre::String(QString(prop).toStdString());
 }
 
-/** Utility function to get the property type by name
-@param name The name of the property i.e. seed or maskEnabled etc.
-@return the QVariant type
-*/
-int QtSpacescapeMainWindow::getPropertyType(const Ogre::String& name)
+int MainWindow::getPropertyType(const Ogre::String& name)
 {
     if(name == "seed" || 
         name == "octaves" ||
@@ -518,11 +479,7 @@ int QtSpacescapeMainWindow::getPropertyType(const Ogre::String& name)
     }
 }
 
-
-/** Utiltiy function for retrieving the selected layer id
-@return int The id of the selected layer or -1
-*/
-int QtSpacescapeMainWindow::getSelectedLayerId()
+int MainWindow::getSelectedLayerId()
 {
     // get the current selected item
     QtBrowserItem* bi = ui->layerProperties->currentItem();
@@ -545,13 +502,7 @@ int QtSpacescapeMainWindow::getSelectedLayerId()
     return -1;
 }
 
-/** Utility function for creating and inserting layer properties
-@param layer Spacescape layer
-@param insertAfter Property to insert after
-@param minimize Minimize this layer
-@return The created / inserted property
-*/
-QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtProperty *insertAfter, bool minimize)
+QtProperty* MainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtProperty *insertAfter, bool minimize)
 {
     // turn refreshing flag on so we don't process valueChanged events
     mRefreshing = true;
@@ -644,17 +595,178 @@ QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer*
     return layerProperties;
 }
 
-/** The about action was clicked
-*/
-void QtSpacescapeMainWindow::onAbout()
+void MainWindow::createNew()
 {
-    QtSpacescapeAboutDialog d;
+    // TODO: prompt to save first
+    ui->ogreWindow->clearLayers();
+    refreshProperties();
+}
+
+
+void MainWindow::openFile()
+{
+    QString filename = QFileDialog::getOpenFileName(
+            this,
+            QLatin1String("Open Spacescape .xml file"),
+            mLastOpenDir,
+            QLatin1String("XML Files (*.xml)")
+    );
+
+    // disable ogre window till done opening to prevent crashes
+    ui->ogreWindow->setDisabled(true);
+
+    if(!filename.isNull() && !filename.isEmpty()) {
+        QFileInfo fi(filename);
+        mLastOpenDir = fi.absolutePath();
+        mLastSaveDir = mLastOpenDir;
+
+        // save in the registry
+        QSettings settings;
+        settings.setValue("LastOpenDir",mLastOpenDir);
+        settings.setValue("LastSaveDir",mLastSaveDir);
+
+        ui->statusBar->showMessage("Opening " + filename + " ...");
+
+        // open the progress dialog
+        // ui->mProgressDialog->setValue(0);
+        // ui->mProgressDialog->show();
+
+        if(ui->ogreWindow->open(filename)) {
+            mFilename = filename;
+
+            QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
+            setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
+
+            // file opened successfully so clear property list and start over
+            refreshProperties();
+
+            ui->statusBar->showMessage("Opened " + filename,3000);
+        }
+        else {
+            ui->statusBar->showMessage("Failed to load " + filename,3000);
+        }
+    }
+
+    ui->ogreWindow->setDisabled(false);
+}
+
+void MainWindow::save()
+{
+    if(mFilename.isEmpty() || mFilename.isNull()) {
+        mFilename = QFileDialog::getSaveFileName(
+                this,
+                "Save As...",
+                mLastSaveDir,
+                QLatin1String("XML Files(*.xml)")
+        );
+    }
+
+    if(!mFilename.isNull()) {
+        if(mFilename.isEmpty()) {
+            // pop up an error - no empty filenames allowed
+        }
+        else {
+            QFileInfo fi(mFilename);
+            mLastSaveDir = fi.absolutePath();
+
+            // save the last save dir in the registry
+            QSettings settings;
+            settings.setValue("LastSaveDir",mLastSaveDir);
+
+            ui->statusBar->showMessage("Saving " + mFilename);
+
+            // save this file!
+            if(ui->ogreWindow->save(mFilename)) {
+                QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
+                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
+
+                ui->statusBar->showMessage("Saved " + mFilename,3000);
+            }
+            else {
+                ui->statusBar->showMessage("Failed to save " + mFilename,3000);
+            }
+        }
+    }
+}
+
+void MainWindow::saveAs()
+{
+    mFilename = QFileDialog::getSaveFileName(
+            this,
+            "Save As...",
+            mLastSaveDir,
+            QLatin1String("XML Files(*.xml)")
+    );
+
+    if(!mFilename.isNull()) {
+        if(mFilename.isEmpty()) {
+            // pop up an error - no empty filenames allowed
+        }
+        else {
+            QFileInfo fi(mFilename);
+            mLastSaveDir = fi.absolutePath();
+
+            // save the last save dir in the registry
+            QSettings settings;
+            settings.setValue("LastSaveDir",mLastSaveDir);
+
+            // save this file!
+            if(ui->ogreWindow->save(mFilename)) {
+                QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
+                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
+            }
+        }
+    }
+}
+
+void MainWindow::showDebugBox()
+{
+    static bool debugVisible = false;
+    debugVisible = !debugVisible;
+    ui->ogreWindow->setDebugBoxVisible(debugVisible);
+    if(debugVisible) {
+        ui->actionShowDebugBox->setText(tr("Hide Debug Box"));
+    } else {
+        ui->actionShowDebugBox->setText(tr("Show Debug Box"));
+    }
+}
+
+void MainWindow::enableHDR()
+{
+    static bool hdrEnabled = false;
+    hdrEnabled = !hdrEnabled;
+
+    ui->ogreWindow->setHDREnabled(hdrEnabled);
+    if(hdrEnabled) {
+        ui->actionEnableHDR->setText(tr("Disable HDR"));
+    } else {
+        ui->actionEnableHDR->setText(tr("Enable HDR"));
+    }
+
+    refreshProperties();
+}
+
+void MainWindow::showAboutDialog()
+{
+    AboutDialog d;
     d.exec();
 }
 
-/** The copy layer button was clicked
-*/
-void QtSpacescapeMainWindow::onCopyLayerClicked()
+void MainWindow::createNewLayer()
+{
+    ui->statusBar->showMessage("Creating new layer...");
+
+    Ogre::NameValuePairList params;
+    ui->ogreWindow->addLayer(0,params);
+
+    ui->statusBar->showMessage("Creating new layer properties list...");
+
+    insertLayerProperties(ui->ogreWindow->getLayers().back());
+
+    ui->statusBar->showMessage("New layer created",3000);
+}
+
+void MainWindow::copySelectedLayer()
 {
     // copy this layer
     int layerId = getSelectedLayerId();
@@ -666,50 +778,104 @@ void QtSpacescapeMainWindow::onCopyLayerClicked()
         if((bl.size() - layerId - 1) == 0) {
             // insert at beginning of properties list
             insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId]);
-        }
-        else {
+        } else {
             // insert before the copied property
-            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId],
-                                  ui->layerProperties->properties()[bl.size() - layerId - 2]);
+            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId], ui->layerProperties->properties()[bl.size() - layerId - 2]);
         }
     }
 }
 
-/** The delete layer button was clicked
-*/
-void QtSpacescapeMainWindow::onDeleteLayerClicked()
-{   
+void MainWindow::deleteSelectedLayer()
+{
     // get the selected layer
     int layerId = getSelectedLayerId();
     if(layerId != -1) {
         ui->ogreWindow->deleteLayer(layerId);
-        QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
+        QList<QtBrowserItem*> bl = ui->layerProperties->topLevelItems();
         ui->layerProperties->removeProperty(bl[bl.size() - layerId - 1]->property());
     }
 }
 
-/** The enable hdr action was clicked
- */
-void QtSpacescapeMainWindow::onEnableHDR()
+void MainWindow::moveSelectedLayerDown()
 {
-    static bool hdrEnabled = false;
-    hdrEnabled = !hdrEnabled;
+    // get the selected layer
+    int layerId = getSelectedLayerId();
+    if(layerId > -1) {
+        if(ui->ogreWindow->moveLayerDown(layerId)) {
+            QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
+            const int index = bl.size() - layerId - 1;
+            QtProperty *p = bl[index]->property();
 
-    ui->ogreWindow->setHDREnabled(hdrEnabled);
-    if(hdrEnabled) {
-        ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Disable HDR", 0));
+            // save expanded settings
+            bool expanded = ui->layerProperties->isExpanded(bl[index]);
+
+            // remove and re-insert at the new location
+            ui->layerProperties->removeProperty(p);
+            ui->layerProperties->insertProperty(p,bl[index + 1]->property());
+
+            // re-apply property tree visiblity settings
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setExpanded(bl[index + 1],expanded);
+
+            // un-expand the color items
+            QList<QtProperty *> sl = p->subProperties();
+            for(const auto& i : sl) {
+                if(((QtVariantProperty*)i)->propertyType() == QVariant::Color) {
+                    QList<QtBrowserItem *> bi = ui->layerProperties->items(i);
+                    ui->layerProperties->setExpanded(bi.first(),false);
+                }
+            }
+
+            // re-select the item
+            ui->layerProperties->setFocus();
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setCurrentItem(bl[index + 1]);
+        }
     }
-    else {
-        ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Enable HDR", 0));
-    }
-    
-    refreshProperties();
 }
 
+void MainWindow::moveSelectedLayerUp()
+{
+    // get the selected layer
+    int layerId = getSelectedLayerId();
+    if(layerId > -1) {
+        if(ui->ogreWindow->moveLayerUp(layerId)) {
+            QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
+            const int index = bl.size() - layerId - 1;
+            QtProperty *p = bl[index]->property();
 
-/** The export action was clicked
-*/
-void QtSpacescapeMainWindow::onExport()
+            // save expanded settings
+            bool expanded = ui->layerProperties->isExpanded(bl[index]);
+
+            // remove and re-insert at the new location
+            ui->layerProperties->removeProperty(p);
+            if(index == 1) {
+                ui->layerProperties->insertProperty(p, NULL);
+            } else {
+                ui->layerProperties->insertProperty(p,bl[index - 2]->property());
+            }
+
+            // re-apply property tree visiblity settings
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setExpanded(bl[index - 1],expanded);
+
+            // un-expand the color items
+            QList<QtProperty *> sl = p->subProperties();
+            for(auto & i : sl) {
+                if(((QtVariantProperty*)i)->propertyType() == QVariant::Color) {
+                    QList<QtBrowserItem *> bi = ui->layerProperties->items(i);
+                    ui->layerProperties->setExpanded(bi.first(),false);
+                }
+            }
+
+            // re-select the item
+            ui->layerProperties->setFocus();
+            ui->layerProperties->setCurrentItem(bl[index - 1]);
+        }
+    }
+}
+
+void MainWindow::onExport()
 {
     QString imageSize;
     QString selectedFilter;
@@ -719,8 +885,7 @@ void QtSpacescapeMainWindow::onExport()
     
     if(ui->ogreWindow->isHDREnabled()) {
         outputTypes = QLatin1String("6 EXR files(*.exr);;Single DDS Cube Map(*.dds)");
-    }
-    else {
+    } else {
         outputTypes = QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg);;6 TGA files(*.tga);;Single DDS Cube Map(*.dds)");
     }
     
@@ -737,7 +902,7 @@ void QtSpacescapeMainWindow::onExport()
         orientation = settings.value("orientation").toString();
     }
     
-	QString filename = QtSpacescapeExportFileDialog::getExportFileName(
+	QString filename = ExportFileDialog::getExportFileName(
 		this,
 		"Export Skybox",
 		mLastExportDir,
@@ -809,257 +974,7 @@ void QtSpacescapeMainWindow::onExport()
 
 }
 
-/** The move down button was clicked
-*/
-void QtSpacescapeMainWindow::onMoveLayerDown()
-{
-    // get the selected layer
-    int layerId = getSelectedLayerId();
-    if(layerId > -1) {
-        if(ui->ogreWindow->moveLayerDown(layerId)) {
-            QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
-            unsigned int index = bl.size() - layerId - 1;
-            QtProperty *p = bl[index]->property();
-
-            // save expanded settings
-            bool expanded = ui->layerProperties->isExpanded(bl[index]);
-
-            // remove and re-insert at the new location
-            ui->layerProperties->removeProperty(p);
-            ui->layerProperties->insertProperty(p,bl[index + 1]->property());
-
-            // re-apply property tree visiblity settings
-            bl = ui->layerProperties->topLevelItems();
-            ui->layerProperties->setExpanded(bl[index + 1],expanded);
-
-            // un-expand the color items
-            QList<QtProperty *> sl = p->subProperties();
-            for(int i = 0; i < sl.size(); i++) {
-                if(((QtVariantProperty*)sl[i])->propertyType() == QVariant::Color) {
-                    QList<QtBrowserItem *> bi = ui->layerProperties->items(sl[i]);
-                    ui->layerProperties->setExpanded(bi.first(),false);
-                }
-            }
-
-            // re-select the item
-            ui->layerProperties->setFocus();
-            bl = ui->layerProperties->topLevelItems();
-            ui->layerProperties->setCurrentItem(bl[index + 1]);
-        }
-    }
-}
-
-/** The move up button was clicked
-*/
-void QtSpacescapeMainWindow::onMoveLayerUp()
-{
-    // get the selected layer
-    int layerId = getSelectedLayerId();
-    if(layerId > -1) {
-        if(ui->ogreWindow->moveLayerUp(layerId)) {
-            QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
-            unsigned int index = bl.size() - layerId - 1;
-            QtProperty *p = bl[index]->property();
-
-            // save expanded settings
-            bool expanded = ui->layerProperties->isExpanded(bl[index]);
-
-            // remove and re-insert at the new location
-            ui->layerProperties->removeProperty(p);
-            if(index == 1) {
-                ui->layerProperties->insertProperty(p, NULL);
-            }
-            else {
-                ui->layerProperties->insertProperty(p,bl[index - 2]->property());
-            }
-
-            // re-apply property tree visiblity settings
-            bl = ui->layerProperties->topLevelItems();
-            ui->layerProperties->setExpanded(bl[index - 1],expanded);
-
-            // un-expand the color items
-            QList<QtProperty *> sl = p->subProperties();
-            for(int i = 0; i < sl.size(); i++) {
-                if(((QtVariantProperty*)sl[i])->propertyType() == QVariant::Color) {
-                    QList<QtBrowserItem *> bi = ui->layerProperties->items(sl[i]);
-                    ui->layerProperties->setExpanded(bi.first(),false);
-                }
-            }
-
-            // re-select the item
-            ui->layerProperties->setFocus();
-            ui->layerProperties->setCurrentItem(bl[index - 1]);
-        }
-    }
-}
-
-/** The new file action was clicked
-*/
-void QtSpacescapeMainWindow::onNewFile()
-{
-    // TODO: prompt to save first
-    ui->ogreWindow->clearLayers();
-    refreshProperties();
-}
-
-/** The new layer button was clicked
-*/
-void QtSpacescapeMainWindow::onNewLayerClicked()
-{
-    ui->statusBar->showMessage("Creating new layer...");
-
-    Ogre::NameValuePairList params;
-    ui->ogreWindow->addLayer(0,params);
-
-    ui->statusBar->showMessage("Creating new layer properties list...");
-
-    // insert the new layer
-    insertLayerProperties(ui->ogreWindow->getLayers().back());
-
-    ui->statusBar->showMessage("New layer created",3000);
-}
-
-/* The open action was clicked
-*/
-void QtSpacescapeMainWindow::onOpen()
-{
-    QString filename = QFileDialog::getOpenFileName(
-         this,
-         QLatin1String("Open Spacescape .xml file"), 
-         mLastOpenDir,
-         QLatin1String("XML Files (*.xml)")
-    );
-
-    // disable ogre window till done opening to prevent crashes
-    ui->ogreWindow->setDisabled(true);
-
-    if(!filename.isNull() && !filename.isEmpty()) {
-        QFileInfo fi(filename);
-        mLastOpenDir = fi.absolutePath();
-        mLastSaveDir = mLastOpenDir;
-
-		// save in the registry
-		QSettings settings;
-		settings.setValue("LastOpenDir",mLastOpenDir);
-		settings.setValue("LastSaveDir",mLastSaveDir);
-
-        ui->statusBar->showMessage("Opening " + filename + " ...");
-
-        // open the progress dialog
-        ui->mProgressDialog->setValue(0);
-        ui->mProgressDialog->show();
-
-        if(ui->ogreWindow->open(filename)) {
-            mFilename = filename;
-
-            QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-            setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
-
-            // file opened successfully so clear property list and start over
-            refreshProperties();
-
-            ui->statusBar->showMessage("Opened " + filename,3000);
-        }
-        else {
-            ui->statusBar->showMessage("Failed to load " + filename,3000);
-        }
-    }
-
-    ui->ogreWindow->setDisabled(false);
-}
-
-/** The save action was clicked
-*/
-void QtSpacescapeMainWindow::onSave()
-{
-    if(mFilename.isEmpty() || mFilename.isNull()) {
-        mFilename = QFileDialog::getSaveFileName(
-            this,
-            "Save As...",
-            mLastSaveDir,
-            QLatin1String("XML Files(*.xml)")
-        );
-    }
-
-    if(!mFilename.isNull()) {
-        if(mFilename.isEmpty()) {
-            // pop up an error - no empty filenames allowed
-        }
-        else {
-            QFileInfo fi(mFilename);
-            mLastSaveDir = fi.absolutePath();
-
-			// save the last save dir in the registry
-			QSettings settings;
-			settings.setValue("LastSaveDir",mLastSaveDir);
-
-            ui->statusBar->showMessage("Saving " + mFilename);
-
-            // save this file!
-            if(ui->ogreWindow->save(mFilename)) {
-                QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
-
-                ui->statusBar->showMessage("Saved " + mFilename,3000);
-            }
-            else {
-                ui->statusBar->showMessage("Failed to save " + mFilename,3000);
-            }
-        }
-    }
-}
-
-/** The save as action was clicked
-*/
-void QtSpacescapeMainWindow::onSaveAs()
-{
-    mFilename = QFileDialog::getSaveFileName(
-        this,
-        "Save As...",
-        mLastSaveDir,
-        QLatin1String("XML Files(*.xml)")
-    );
-
-    if(!mFilename.isNull()) {
-        if(mFilename.isEmpty()) {
-            // pop up an error - no empty filenames allowed
-        }
-        else {
-            QFileInfo fi(mFilename);
-            mLastSaveDir = fi.absolutePath();
-
-			// save the last save dir in the registry
-			QSettings settings;
-			settings.setValue("LastSaveDir",mLastSaveDir);
-
-            // save this file!
-            if(ui->ogreWindow->save(mFilename)) {
-                QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
-            }
-        }
-    }
-}
-    
-/** The show debug box was clicked
- */
-void QtSpacescapeMainWindow::onShowDebugBox()
-{
-    static bool debugVisible = false;
-    debugVisible = !debugVisible;
-    ui->ogreWindow->setDebugBoxVisible(debugVisible);
-    if(debugVisible) {
-        ui->actionShowDebugBox->setText(QApplication::translate("MainWindow", "Hide Debug Box", 0));
-    }
-    else {
-        ui->actionShowDebugBox->setText(QApplication::translate("MainWindow", "Show Debug Box", 0));
-    }
-}
-
-    
-/** Utility function for refreshing the entire layer property tree
-*/
-void QtSpacescapeMainWindow::refreshProperties()
+void MainWindow::refreshProperties()
 {
     // set refreshing properties flag so we don't process valueChanged events
     mRefreshing = true;
@@ -1085,23 +1000,14 @@ void QtSpacescapeMainWindow::refreshProperties()
     mRefreshing = false;
 }
 
-/** Function used to update the progress bar
-@param percentComplete The percentage complete 0 - 100
-@param msg The current task message
-*/
-void QtSpacescapeMainWindow::updateProgressBar(unsigned int percentComplete, const Ogre::String& msg)
+void MainWindow::updateProgressBar(unsigned int percentComplete, const Ogre::String& msg)
 {
-    ui->mProgressDialog->setValue(percentComplete);
-    ui->mProgressDialog->setLabelText(QString(msg.c_str()));
+    // ui->mProgressDialog->setValue(percentComplete);
+    // ui->mProgressDialog->setLabelText(QString(msg.c_str()));
     qApp->processEvents();
 }
 
-/** A layer property was changed in the UI. Update the layer and 
-make any necessary UI changes.
-@param property The changed property name
-@param value The new value.
-*/
-void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &value)
+void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
 {
     // don't update if we're refreshing
     if(mRefreshing) return;
@@ -1220,7 +1126,7 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
     }
 }
     
-void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QString &value)
+void MainWindow::valueChanged(QtProperty *property, const QString &value)
 {
     // don't update if we're refreshing
     if(mRefreshing) return;
@@ -1262,4 +1168,3 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QString &v
         ui->ogreWindow->updateLayer(layerId,params);
     }
 }
-

@@ -27,38 +27,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#ifndef __QTSPACESCAPEEXPORTFILEDIALOG_H__
-#define __QTSPACESCAPEEXPORTFILEDIALOG_H__
+#include "AboutDialog.h"
+#include "ui_AboutDialog.h"
+#include "SpacescapeVersion.h"
 
-#include <QFileDialog>
-#include <QComboBox>
-#include <QCheckBox>
+using namespace spacescape;
 
-struct QFileDialogArgs;
-
-class QtSpacescapeExportFileDialog : public QFileDialog
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent),
+    ui(new Ui::AboutDialog)
 {
-public:
-    /** constructor
-    */
-    QtSpacescapeExportFileDialog(QWidget *parent, Qt::WindowFlags f);
+    ui->setupUi(this);
+    ui->versionLabel->setText(spacescape::VersionStr);
+}
 
-    QtSpacescapeExportFileDialog(const QFileDialogArgs &args);
+AboutDialog::~AboutDialog()
+{
+    delete ui;
+}
 
-    /** destructor
-    */
-    ~QtSpacescapeExportFileDialog(void);
-
-    static QString getExportFileName(QWidget *parent = 0,
-                                   const QString &caption = QString(),
-                                   const QString &dir = QString(),
-                                   const QString &filter = QString(),
-                                   QString *selectedFilter = 0,
-                                   Options options = 0,
-                                   QString *imageSize = 0,
-                                   QString *orientation = 0);
-    QComboBox* mExportSize;
-    QCheckBox* mExportCubeMap;
-};
-
-#endif
+void AboutDialog::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}

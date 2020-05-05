@@ -27,7 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "QtSpacescapeWidget.h"
+#include "PreviewWidget.h"
 #include <QMouseEvent>
 //#include "OGRE/Ogre.h"
 #include <Ogre.h>
@@ -36,13 +36,13 @@ THE SOFTWARE.
 #include "macUtils.h"
 #endif
 
-using namespace Ogre;
+using namespace spacescape;
 
-const float QtSpacescapeWidget::mRADIUS = (float)0.8;
+const float PreviewWidget::mRADIUS = (float)0.8;
 
-QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QWidget(parent, Qt::WindowType::Widget),
-    mProgressListener(nullptr),
-    mOgreCtx("Spacescape")
+PreviewWidget::PreviewWidget(QWidget *parent) : QWidget(parent, Qt::WindowType::Widget),
+    mProgressListener(nullptr)
+    // mOgreCtx("Spacescape")
 {
 	mSceneMgr = nullptr;
 	mViewPort = nullptr;
@@ -53,52 +53,52 @@ QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QWidget(parent, Qt::Wi
     setAttribute(Qt::WA_PaintOnScreen);
 }
 
-int QtSpacescapeWidget::addLayer(int type, const Ogre::NameValuePairList& params)
+int PreviewWidget::addLayer(int type, const Ogre::NameValuePairList& params)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         int ret = plugin->addLayer(type, params);
-        mOgreCtx.getRoot()->renderOneFrame();
+        //mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
     return -1;
 }
 
-void QtSpacescapeWidget::clearLayers()
+void PreviewWidget::clearLayers()
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->clear();
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-int QtSpacescapeWidget::copyLayer(unsigned int layerID)
+int PreviewWidget::copyLayer(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         int ret = plugin->duplicateLayer(layerID);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
     return -1;
 }
 
-bool QtSpacescapeWidget::deleteLayer(unsigned int layerID)
+bool PreviewWidget::deleteLayer(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->deleteLayer(layerID);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
     return false;
 }
 
-bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imageSize, bool cubeMap, int orientation)
+bool PreviewWidget::exportSkybox(const QString& filename, unsigned int imageSize, bool cubeMap, int orientation)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
@@ -106,7 +106,7 @@ bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imag
             Ogre::String(filename.toStdString()),
             imageSize,
             cubeMap ? Ogre::TEX_TYPE_CUBE_MAP : Ogre::TEX_TYPE_2D,
-			(SpacescapePlugin::SpacescapeRTTOrientation)orientation
+			(Ogre::SpacescapePlugin::SpacescapeRTTOrientation) orientation
         );
         return true;
     }
@@ -114,7 +114,7 @@ bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imag
     return false;
 }
 
-std::vector<Ogre::SpacescapeLayer *> QtSpacescapeWidget::getLayers()
+std::vector<Ogre::SpacescapeLayer *> PreviewWidget::getLayers()
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
@@ -126,19 +126,20 @@ std::vector<Ogre::SpacescapeLayer *> QtSpacescapeWidget::getLayers()
     return layers;
 }
 
-Ogre::SpacescapePlugin* QtSpacescapeWidget::getPlugin()
+Ogre::SpacescapePlugin* PreviewWidget::getPlugin()
 {
     if(!mOgreCtx.getRoot()) {
         return nullptr;
     }
 
-    static SpacescapePlugin plugin;
+    static Ogre::SpacescapePlugin plugin;
     return &plugin;
 }
 
-void QtSpacescapeWidget::paintEvent(QPaintEvent *e)
+void PreviewWidget::paintEvent(QPaintEvent *e)
 {
-    if(!mOgreCtx.getRoot()) {
+    QWidget::paintEvent(e);
+    /*if(!mOgreCtx.getRoot()) {
         mOgreCtx.injectMainWindow(windowHandle());
         mOgreCtx.useQtEventLoop(true);
         mOgreCtx.initApp();
@@ -146,17 +147,17 @@ void QtSpacescapeWidget::paintEvent(QPaintEvent *e)
         setupResources();
         setupScene();
         show();
-    }
+    }*/
 
-    mOgreCtx.getRoot()->renderOneFrame();
+    //mOgreCtx.getRoot()->renderOneFrame();
 }
 
-bool QtSpacescapeWidget::isHDREnabled()
+bool PreviewWidget::isHDREnabled()
 {
     return pluginReady() ? getPlugin()->isHDREnabled() : false;
 }
 
-void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e)
+void PreviewWidget::mouseMoveEvent(QMouseEvent *e)
 {
     if (mMousePressed) {
         QPoint curPos = e->pos();
@@ -204,79 +205,80 @@ void QtSpacescapeWidget::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-void QtSpacescapeWidget::mousePressEvent(QMouseEvent *e)
+void PreviewWidget::mousePressEvent(QMouseEvent *e)
 {
-    mMousePressPos = e->pos();
+    /*mMousePressPos = e->pos();
 	if (mCameraNode) {
         mLastCamOrientation = mCameraNode->getOrientation();
 	}
 
-    mMousePressed = true;
+    mMousePressed = true;*/
 }
 
-void QtSpacescapeWidget::mouseReleaseEvent(QMouseEvent *)
+void PreviewWidget::mouseReleaseEvent(QMouseEvent *)
 {
     mMousePressed = false;
 }
 
-bool QtSpacescapeWidget::moveLayerDown(unsigned int layerID)
+bool PreviewWidget::moveLayerDown(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->moveLayer(layerID,-1);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
     return false;
 }
 
-bool QtSpacescapeWidget::moveLayerUp(unsigned int layerID)
+bool PreviewWidget::moveLayerUp(unsigned int layerID)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->moveLayer(layerID,1);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
     return false;
 }
 
-bool QtSpacescapeWidget::open(const QString& filename)
+bool PreviewWidget::open(const QString& filename)
 {
+    /*
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         if(mProgressListener) {
             plugin->addProgressListener(mProgressListener);
         }
         return plugin->loadConfigFile(filename.toStdString());
-    }
+    }*/
 
     return false;
 }
 
-bool QtSpacescapeWidget::pluginReady()
+bool PreviewWidget::pluginReady()
 {
     return getPlugin() != nullptr;
 }
 
-void QtSpacescapeWidget::resizeEvent(QResizeEvent *e) {
+void PreviewWidget::resizeEvent(QResizeEvent *e) {
     if(e->size() == e->oldSize()) {
         return;
     }
 
-    if (mOgreCtx.getRoot()) {
+    /*if (mOgreCtx.getRoot()) {
         // Alter the camera aspect ratio to match the viewport
         mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
-    }
+    }*/
 
     //QTimer::singleShot(30, windowHandle(), SLOT(requestUpdate()));
 
     QWidget::resizeEvent(e);
 }
 
-bool QtSpacescapeWidget::save(const QString& filename)
+bool PreviewWidget::save(const QString& filename)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
@@ -286,34 +288,34 @@ bool QtSpacescapeWidget::save(const QString& filename)
     return false;
 }
 
-void QtSpacescapeWidget::setDebugBoxVisible(bool visible)
+void PreviewWidget::setDebugBoxVisible(bool visible)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setDebugBoxVisible(visible);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-void QtSpacescapeWidget::setHDREnabled(bool enabled)
+void PreviewWidget::setHDREnabled(bool enabled)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setHDREnabled(enabled);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-void QtSpacescapeWidget::setLayerVisible(unsigned int layerID, bool visible)
+void PreviewWidget::setLayerVisible(unsigned int layerID, bool visible)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setLayerVisible(layerID,visible);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
-void QtSpacescapeWidget::setupResources()
+void PreviewWidget::setupResources()
 {
 #ifdef Q_OS_MAC
     Ogre::String resourcePath = Ogre::macBundlePath() + "/Contents/Resources/";
@@ -356,7 +358,7 @@ void QtSpacescapeWidget::setupResources()
 
 }
 
-void QtSpacescapeWidget::setupScene()
+void PreviewWidget::setupScene()
 {
 	mSceneMgr = Ogre::Root::getSingleton().createSceneManager();
 
@@ -389,12 +391,12 @@ void QtSpacescapeWidget::setupScene()
 //    addLayer(1, params);
 }
 
-bool QtSpacescapeWidget::updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params)
+bool PreviewWidget::updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->updateLayer(layerID,params);
-        mOgreCtx.getRoot()->renderOneFrame();
+        // mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
