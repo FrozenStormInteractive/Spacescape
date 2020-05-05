@@ -28,7 +28,7 @@ qt5_add_resources(SPC_SOURCES ${SPC_RESOURCES})
 add_executable(Spacescape ${SPC_SOURCES} ${SPC_HEADERS} ${SPC_RESOURCES})
 
 target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser OgreMain OgreBitesQt)
-target_include_directories(Spacescape PUBLIC include ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/include)
+target_include_directories(Spacescape PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 set_target_properties(Spacescape PROPERTIES AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 file(GLOB_RECURSE MEDIA media/*)

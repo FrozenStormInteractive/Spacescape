@@ -1,5 +1,7 @@
 add_subdirectory(external/tinyxml2)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SpacescapePluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapePluginVersion.h)
+
 FILE(GLOB_RECURSE SPCPLG_SOURCES src/*.cpp)
 
 FILE(GLOB_RECURSE SPCPLG_HEADERS include/*.h)
@@ -7,7 +9,7 @@ FILE(GLOB_RECURSE SPCPLG_HEADERS include/*.h)
 aux_source_directory(src/ SPCPLG_SOURCES)
 
 add_library(SpacescapePlugin SHARED ${SPCPLG_SOURCES} ${SPCPLG_HEADERS})
-target_include_directories(SpacescapePlugin PUBLIC include)
+target_include_directories(SpacescapePlugin PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 target_compile_definitions(SpacescapePlugin PUBLIC TIXML_USE_TICPP PRIVATE EXR_SUPPORT)
 target_link_libraries(SpacescapePlugin OgreMain)
 
