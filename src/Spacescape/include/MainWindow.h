@@ -27,8 +27,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#ifndef __QTSPACESCAPEMAINWINDOW_H__
-#define __QTSPACESCAPEMAINWINDOW_H__
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QtProperty>
@@ -89,57 +89,74 @@ namespace spacescape
         */
         void currentItemChanged(QtBrowserItem *item);
 
+        /**
+         * @brief Create new file
+         */
+        void createNew();
+
+        /**
+         * @brief Open file
+         */
+        void openFile();
+
+        /**
+         * @brief Save current
+         */
+        void save();
+
+        /**
+         * @brief Prompt and save current
+         */
+        void saveAs();
+
+        /**
+         * @brief Show debug box
+         */
+        void showDebugBox();
+
+        /**
+         * @brief Enable HDF
+         */
+        void enableHDR();
+
         /** The about action was clicked
         */
-        void onAbout();
+        void showAboutDialog();
 
-        /** The copy layer button was clicked
-        */
-        void onCopyLayerClicked();
-
-        /** The delete layer button was clicked
-        */
-        void onDeleteLayerClicked();
-
-        /** The enable hdr action was clicked
+        /**
+         * Create a new layer
          */
-        void onEnableHDR();
+        void createNewLayer();
+
+        /**
+         * @brief Copy selected layer
+         */
+        void copySelectedLayer();
+
+        /**
+         * @brief Delete selected layer
+         */
+        void deleteSelectedLayer();
+
+        /**
+         * @brief Move the selected layer down
+         */
+        void moveSelectedLayerDown();
+
+        /**
+         * @brief Move the selected layer up
+         */
+        void moveSelectedLayerUp();
 
         /** The export action was clicked
         */
         void onExport();
 
-        /** The move down button was clicked
-        */
-        void onMoveLayerDown();
 
-        /** The move up button was clicked
-        */
-        void onMoveLayerUp();
 
-        /** The new file action was clicked
-        */
-        void onNewFile();
 
-        /** The new layer button was clicked
-        */
-        void onNewLayerClicked();
 
-        /* The open action was clicked
-        */
-        void onOpen();
 
-        /** The save action was clicked
-        */
-        void onSave();
-
-        /** The save as action was clicked
-        */
-        void onSaveAs();
-
-        /** The show debug box action was clicked
-         */
-        void onShowDebugBox();
 
         /** A layer property was changed in the UI. Update the layer and
         make any necessary UI changes.
@@ -149,7 +166,8 @@ namespace spacescape
         void valueChanged(QtProperty *property, const QVariant &value);
         void valueChanged(QtProperty *property, const QString &value);
 
-        void paintEvent(QPaintEvent *event);
+    protected:
+        void paintEvent(QPaintEvent *event) override;
 
     private:
 
@@ -244,4 +262,4 @@ namespace spacescape
     };
 }
 
-#endif // __QTSPACESCAPEMAINWINDOW_H__
+#endif // MAINWINDOW_H

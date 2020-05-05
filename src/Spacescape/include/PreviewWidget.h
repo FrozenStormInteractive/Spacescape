@@ -38,169 +38,177 @@ THE SOFTWARE.
 #include "SpacescapePlugin.h"
 #include "SpacescapeLayer.h"
 
-/**
- * QtSpacescapeWidget interacts with the Spacescape Ogre Plugin and Ogre.
- */
-class QtSpacescapeWidget : public QWidget
+namespace spacescape
 {
-	Q_OBJECT
-public:
     /**
-     * Constructor
+     * interacts with the Spacescape Ogre Plugin and Ogre.
      */
-	QtSpacescapeWidget(QWidget* parent);
+    class PreviewWidget : public QWidget
+    {
+        Q_OBJECT
+    public:
+        /**
+         * Constructor
+         */
+        PreviewWidget(QWidget *parent);
 
-    /**
-     * Destructor
-     */
-	~QtSpacescapeWidget() = default;
-    
-    /** Add a SpacescapeLayer
-    @param type Layer type (0 - points, 1 billboards, 2 noise)
-    @param params Layer params
-    @return layerId or -1 on failure
-    */
-    int addLayer(int type, const Ogre::NameValuePairList& params);
+        /**
+         * Destructor
+         */
+        ~PreviewWidget() = default;
 
-    /** Clear all SpacescapeLayers
-    */
-    void clearLayers();
+        /** Add a SpacescapeLayer
+        @param type Layer type (0 - points, 1 billboards, 2 noise)
+        @param params Layer params
+        @return layerId or -1 on failure
+        */
+        int addLayer(int type, const Ogre::NameValuePairList &params);
 
-    /** Copy a SpacescapeLayer
-    @param layerID Layer ID of the layer to copy
-    @return layerId of the new layer or -1 on failure
-    */
-    int copyLayer(unsigned int layerID);
+        /** Clear all SpacescapeLayers
+        */
+        void clearLayers();
 
-    /** Delete a SpacescapeLayer
-    @param layerID Layer ID of the layer to delete
-    @return true on success
-    */
-    bool deleteLayer(unsigned int layerID);
+        /** Copy a SpacescapeLayer
+        @param layerID Layer ID of the layer to copy
+        @return layerId of the new layer or -1 on failure
+        */
+        int copyLayer(unsigned int layerID);
 
-    /** Write the current spacescape to a skybox
-    @param filename Name of the file (with path)
-    @param imageSize The size of the image in pixels
-    @param cubeMap Whether to write a single cubemap or not
-	@param orientation Orientation changes based on skybox type
-    @return true on success
-    */
-	bool exportSkybox(const QString& filename, unsigned int imageSizee = 1024, bool cubeMap = false, int orientation = 0);
+        /** Delete a SpacescapeLayer
+        @param layerID Layer ID of the layer to delete
+        @return true on success
+        */
+        bool deleteLayer(unsigned int layerID);
 
-    /** Get current SpacescapeLayers list
-    @return current SpacescapeLayers list
-    */
-    std::vector<Ogre::SpacescapeLayer *> getLayers();
+        /** Write the current spacescape to a skybox
+        @param filename Name of the file (with path)
+        @param imageSize The size of the image in pixels
+        @param cubeMap Whether to write a single cubemap or not
+        @param orientation Orientation changes based on skybox type
+        @return true on success
+        */
+        bool exportSkybox(const QString &filename, unsigned int imageSizee = 1024, bool cubeMap = false,
+                          int orientation = 0);
 
-    bool isHDREnabled();
-    
-    /** Move a SpacescapeLayer down in the list
-    @param layerID The layer ID of the layer to move
-    @return true on success
-    */
-    bool moveLayerDown(unsigned int layerID);
+        /** Get current SpacescapeLayers list
+        @return current SpacescapeLayers list
+        */
+        std::vector<Ogre::SpacescapeLayer *> getLayers();
 
-    /** Move a SpacescapeLayer up in the list
-    @param layerID The layer ID of the layer to move
-    @return true on success
-    */
-    bool moveLayerUp(unsigned int layerID);
+        bool isHDREnabled();
 
-    /** Open a Spacescape .xml file
-    @param filename The name of the file to open (with path)
-    @return true on success
-    */
-    bool open(const QString& filename);
+        /** Move a SpacescapeLayer down in the list
+        @param layerID The layer ID of the layer to move
+        @return true on success
+        */
+        bool moveLayerDown(unsigned int layerID);
 
-    /** Return true if plugin is ready
-     @return true on success
-     */
-    bool pluginReady();
-    
-    /** Save a Spacescape .xml file
-    @param filename The name of the file to save (with path)
-    @return true on success
-    */
-    bool save(const QString& filename);
+        /** Move a SpacescapeLayer up in the list
+        @param layerID The layer ID of the layer to move
+        @return true on success
+        */
+        bool moveLayerUp(unsigned int layerID);
 
-    /** Change the visibility of a SpacescapeLayer
-    @param layerID The layer ID of the layer to show/hide
-    @param visible Visibility flag
-    */
-    void setLayerVisible(unsigned int layerID, bool visible);
+        /** Open a Spacescape .xml file
+        @param filename The name of the file to open (with path)
+        @return true on success
+        */
+        bool open(const QString &filename);
 
-    /** Set the progress listener
-    @param listener The new listener object
-    */
-    void setProgressListener(Ogre::SpacescapeProgressListener* listener) { mProgressListener = listener; }
+        /** Return true if plugin is ready
+         @return true on success
+         */
+        bool pluginReady();
 
-    void setDebugBoxVisible(bool visible);
+        /** Save a Spacescape .xml file
+        @param filename The name of the file to save (with path)
+        @return true on success
+        */
+        bool save(const QString &filename);
 
-    void setHDREnabled(bool enabled);
-    
-    /** Update the params or a SpacescapeLayer
-    @param layerID The layer ID of the layer to move
-    @param params The new params
-    @return true on success
-    */
-    bool updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params);
+        /** Change the visibility of a SpacescapeLayer
+        @param layerID The layer ID of the layer to show/hide
+        @param visible Visibility flag
+        */
+        void setLayerVisible(unsigned int layerID, bool visible);
 
-protected:
+        /** Set the progress listener
+        @param listener The new listener object
+        */
+        void setProgressListener(Ogre::SpacescapeProgressListener *listener) { mProgressListener = listener; }
 
-    /**
-     * Set up Ogre resources
-     */
-    void setupResources();
+        void setDebugBoxVisible(bool visible);
 
-    /**
-     * Setup the scene
-     */
-    void setupScene();
+        void setHDREnabled(bool enabled);
 
-	//Qt events
-	void mouseMoveEvent(QMouseEvent *e) override;
-	void mousePressEvent(QMouseEvent *e) override;
-	void mouseReleaseEvent(QMouseEvent *e) override;
-    void paintEvent(QPaintEvent *e) override;
-	void resizeEvent(QResizeEvent *e) override;
+        /** Update the params or a SpacescapeLayer
+        @param layerID The layer ID of the layer to move
+        @param params The new params
+        @return true on success
+        */
+        bool updateLayer(unsigned int layerID, const Ogre::NameValuePairList &params);
 
-    inline QPaintEngine* paintEngine() const override { return nullptr; }
+    protected:
 
-    // mouse pressed flag
-	bool mMousePressed;
+        /**
+         * Set up Ogre resources
+         */
+        void setupResources();
 
-    // mouse pressed position
-	QPoint mMousePressPos;
+        /**
+         * Setup the scene
+         */
+        void setupScene();
 
-    // camera orientation when mouse was last pressed
-	Ogre::Quaternion mLastCamOrientation;
+        //Qt events
+        void mouseMoveEvent(QMouseEvent *e) override;
 
-    // Ogre camera node
-	Ogre::SceneNode* mCameraNode = nullptr;
+        void mousePressEvent(QMouseEvent *e) override;
 
-    // Ogre scene manager
-	Ogre::SceneManager* mSceneMgr = nullptr;
+        void mouseReleaseEvent(QMouseEvent *e) override;
 
-    // Ogre camera
-	Ogre::Camera* mCamera = nullptr;
+        void paintEvent(QPaintEvent *e) override;
 
-    // Ogre viewport
-	Ogre::Viewport* mViewPort = nullptr;
+        void resizeEvent(QResizeEvent *e) override;
 
-    // the radius used for rotating
-	static const float mRADIUS;
+        inline QPaintEngine *paintEngine() const override { return nullptr; }
 
-private:
-    OgreBites::ApplicationContextQt mOgreCtx;
-    
-    /** Utility function for getting a pointer to 
-    the Spacescape Ogre plugin
-    @return the spacescape plugin or NULL
-    */
-    Ogre::SpacescapePlugin* getPlugin();
+        // mouse pressed flag
+        bool mMousePressed;
 
-    // Our spacescape progress listener
-    Ogre::SpacescapeProgressListener* mProgressListener;
-};
+        // mouse pressed position
+        QPoint mMousePressPos;
+
+        // camera orientation when mouse was last pressed
+        Ogre::Quaternion mLastCamOrientation;
+
+        // Ogre camera node
+        Ogre::SceneNode *mCameraNode = nullptr;
+
+        // Ogre scene manager
+        Ogre::SceneManager *mSceneMgr = nullptr;
+
+        // Ogre camera
+        Ogre::Camera *mCamera = nullptr;
+
+        // Ogre viewport
+        Ogre::Viewport *mViewPort = nullptr;
+
+        // the radius used for rotating
+        static const float mRADIUS;
+
+    private:
+        OgreBites::ApplicationContextQt mOgreCtx;
+
+        /** Utility function for getting a pointer to
+        the Spacescape Ogre plugin
+        @return the spacescape plugin or NULL
+        */
+        Ogre::SpacescapePlugin *getPlugin();
+
+        // Our spacescape progress listener
+        Ogre::SpacescapeProgressListener *mProgressListener;
+    };
+}
 
 #endif

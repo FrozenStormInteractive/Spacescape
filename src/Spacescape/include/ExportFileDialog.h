@@ -34,31 +34,36 @@ THE SOFTWARE.
 #include <QComboBox>
 #include <QCheckBox>
 
-struct QFileDialogArgs;
-
-class QtSpacescapeExportFileDialog : public QFileDialog
+namespace spacescape
 {
-public:
-    /** constructor
-    */
-    QtSpacescapeExportFileDialog(QWidget *parent, Qt::WindowFlags f);
+    struct QFileDialogArgs;
 
-    QtSpacescapeExportFileDialog(const QFileDialogArgs &args);
+    class ExportFileDialog : public QFileDialog
+    {
+        Q_OBJECT
+    public:
+        /**
+         * constructor
+         */
+        ExportFileDialog(QWidget* parent, Qt::WindowFlags f);
 
-    /** destructor
-    */
-    ~QtSpacescapeExportFileDialog(void);
+        /**
+         * destructor
+         */
+        ~ExportFileDialog() = default;
 
-    static QString getExportFileName(QWidget *parent = 0,
-                                   const QString &caption = QString(),
-                                   const QString &dir = QString(),
-                                   const QString &filter = QString(),
-                                   QString *selectedFilter = 0,
-                                   Options options = 0,
-                                   QString *imageSize = 0,
-                                   QString *orientation = 0);
-    QComboBox* mExportSize;
-    QCheckBox* mExportCubeMap;
-};
+        /*
+         * Static methods
+         */
+
+        static QString
+        getExportFileName(QWidget* parent = nullptr, const QString& caption = QString(), const QString& dir = QString(),
+                          const QString& filter = QString(), QString* selectedFilter = nullptr, Options options = 0,
+                          QString* imageSize = nullptr, QString* orientation = nullptr);
+
+    private:
+        ExportFileDialog(const QFileDialogArgs& args);
+    };
+}
 
 #endif // EXPORTFILEDIALOG_H
