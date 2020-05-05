@@ -1,3 +1,5 @@
+add_subdirectory(external/tinyxml2)
+
 FILE(GLOB_RECURSE SPCPLG_SOURCES src/*.cpp)
 
 FILE(GLOB_RECURSE SPCPLG_HEADERS include/*.h)
