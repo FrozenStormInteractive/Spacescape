@@ -27,10 +27,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "SpacescapePlugin.h"
-#include "SpacescapeLayerBillboards.h"
-#include "SpacescapeLayerNoise.h"
-#include "SpacescapeLayerPoints.h"
+#include <iostream>
+
 #include "OgreRoot.h"
 #include "OgreMaterialManager.h"
 #include "OgreTextureManager.h"
@@ -38,13 +36,17 @@ THE SOFTWARE.
 #include "OgreRenderTarget.h"
 #include "OgreRenderTexture.h"
 #include "OgreSceneNode.h"
-#include <iostream>
-#include "ticpp.h"
-//#include "half.h"
 #include "OgreLogManager.h"
 #include "OgreCamera.h"
 #include "OgreViewport.h"
 #include "OgreTechnique.h"
+
+#include "SpacescapePlugin.h"
+#include "SpacescapeLayerBillboards.h"
+#include "SpacescapeLayerNoise.h"
+#include "SpacescapeLayerPoints.h"
+
+#include "tinyxml2.h"
 
 namespace Ogre 
 {
@@ -597,20 +599,16 @@ namespace Ogre
     */
     bool SpacescapePlugin::loadConfigFile(DataStreamPtr& stream)
     {
-        ticpp::Document config;
-        ticpp::Iterator<ticpp::Element> child;
-        unsigned int numLayers = 0;
+        tinyxml2::XMLDocument config;
+
         unsigned int currentLayer = 1;
         unsigned int progressAmount = 0;
 
         // update progress
         updateProgress(progressAmount, "Loading .xml");
 
-        try {
-            config.Parse(stream->getAsString());
-        }
-        catch(ticpp::Exception& e) {
-            LogManager::getSingleton().getDefaultLog()->logMessage("Invalid XML file " + String(e.what()));
+        if(config.LoadFile(stream->getAsString().c_str()) != tinyxml2::XMLError::XML_SUCCESS) {
+            LogManager::getSingleton().getDefaultLog()->logMessage("Invalid XML file " + String(config.ErrorStr()));
             return false;
         }
 
@@ -620,25 +618,20 @@ namespace Ogre
         // clear the current scene first
         clear();
 
+        tinyxml2::XMLElement* rootEl = config.RootElement();
+
         // get number of layers to add
-        for(child = child.begin(config.FirstChildElement()); child != child.end(); child++) {
-            std::string key;
-
+        unsigned int numLayers = 0;
+        for(tinyxml2::XMLElement* child = rootEl->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
             // top level items should be layers
-            child->GetValue(&key);
-
-            if(key == "layer") {
+            if(std::strcmp(child->Value(), "layer") == 0) {
                 numLayers++;
             }
         }
 
-        for(child = child.begin(config.FirstChildElement()); child != child.end(); child++) {
-            std::string key, value;
-
+        for(tinyxml2::XMLElement* child = rootEl->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
             // top level items are layers
-            child->GetValue(&key);
-
-            if(key == "layer") {
+            if(std::strcmp(child->Value(), "layer") == 0) {
                 // default layer type is points
                 int layerType = SLT_POINTS;
 
@@ -646,26 +639,25 @@ namespace Ogre
                 NameValuePairList params;
 
                 // go through all the layer parameters
-                ticpp::Iterator<ticpp::Element> subchild;
-                for(subchild = subchild.begin(child->ToElement()); subchild != subchild.end(); subchild++) {
-                    subchild->GetValue(&key);
-
+                for(tinyxml2::XMLElement* subchild = child->FirstChildElement(); subchild != nullptr; subchild = subchild->NextSiblingElement()) {
                     // get the layer type
-                    if(key == "type") {
-                        subchild->GetTextOrDefault(&value,"points");
-                        if(value == "billboards") {
+                    if(std::strcmp(subchild->Value(), "type") == 0) {
+                        const char* txt = subchild->GetText();
+                        if(std::strlen(txt) == 0)
+                        {
+                            txt = "points";
+                        }
+
+                        if(std::strcmp(txt, "billboards") == 0) {
                             layerType = SLT_BILLBOARDS;
-                        }
-                        else if(value == "noise") {
+                        } else if(std::strcmp(txt, "noise") == 0) {
                             layerType = SLT_NOISE;
-                        }
-                        else {
+                        } else {
                             layerType = SLT_POINTS;
                         }
-                    }
-                    else {
+                    } else {
                         // add this to the params list
-                        subchild->GetTextOrDefault(&params[key],"");
+                        //subchild->GetTextOrDefault(&params[key],"");
                     }
                 }
 
@@ -723,7 +715,7 @@ namespace Ogre
 			DataStreamPtr stream = 
 				ResourceGroupManager::getSingleton().openResource(filename, 
 					ResourceGroupManager::getSingleton().getWorldResourceGroupName());
-            if(stream = nullptr) {
+            if(stream == nullptr) {
                 LogManager::getSingleton().getDefaultLog()->logMessage("Empty config file: " + filename);
                 return false;
             }
@@ -925,26 +917,25 @@ namespace Ogre
             return false;
         }
 
-        try {
+        //try {
             // create an xml file from layer params
-            ticpp::Document config;
-            ticpp::Declaration *decl = new ticpp::Declaration ("1.0", "utf-8", "");
+            tinyxml2::XMLDocument config;
+            tinyxml2::XMLDeclaration* decl = config.NewDeclaration();
             config.LinkEndChild(decl);
 
-            ticpp::Element elem("spacescapelayers");
-            ticpp::Element *n = config.InsertEndChild(elem)->ToElement();
-            for(unsigned int i = 0; i < mLayers.size(); i++) {
+            tinyxml2::XMLElement* root = config.NewElement("spacescapelayers");
+            config.InsertEndChild(root);
+            for(auto & mLayer : mLayers) {
                 // create the layer node
-				ticpp::Element temp_element = ticpp::Element("layer");
-                ticpp::Element *layerNode = n->InsertEndChild(temp_element)->ToElement();
+                tinyxml2::XMLElement* layerNode = config.NewElement("layer");
+                root->InsertEndChild(layerNode);
 
                 // create all the layer data nodes
-                NameValuePairList pl = mLayers[i]->getParams();
+                NameValuePairList pl = mLayer->getParams();
                 NameValuePairList::iterator pli;
                 for(pli = pl.begin(); pli != pl.end(); pli++) {
-                    ticpp::Element layerElem;
-                    layerElem.SetValue(pli->first.c_str());
-                    layerElem.SetText(pli->second.c_str());
+                    tinyxml2::XMLElement* layerElem = config.NewElement(pli->first.c_str());
+                    layerElem->SetText(pli->second.c_str());
 
                     // append this node
                     layerNode->InsertEndChild(layerElem);   
@@ -952,13 +943,11 @@ namespace Ogre
             }
             // save the xml file
             config.SaveFile(filename.c_str());
-
-            delete decl;
-        }
+        /*}
         catch(ticpp::Exception& e) {
             LogManager::getSingleton().getDefaultLog()->logMessage("saveConfigFile()  " + String(e.what()));
             return false;
-        }
+        }*/
 
         return true;
     }

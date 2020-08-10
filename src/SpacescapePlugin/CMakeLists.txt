@@ -11,7 +11,7 @@ aux_source_directory(src/ SPCPLG_SOURCES)
 add_library(SpacescapePlugin SHARED ${SPCPLG_SOURCES} ${SPCPLG_HEADERS})
 target_include_directories(SpacescapePlugin PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 target_compile_definitions(SpacescapePlugin PUBLIC TIXML_USE_TICPP PRIVATE EXR_SUPPORT)
-target_link_libraries(SpacescapePlugin OgreMain)
+target_link_libraries(SpacescapePlugin OgreMain tinyxml2)
 
 set_target_properties(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape" PREFIX "")
 

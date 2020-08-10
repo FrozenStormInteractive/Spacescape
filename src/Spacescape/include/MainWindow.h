@@ -119,12 +119,13 @@ namespace spacescape
          */
         void enableHDR();
 
-        /** The about action was clicked
-        */
+        /**
+         * @brief Show About dialog
+         */
         void showAboutDialog();
 
         /**
-         * Create a new layer
+         * @brief Create a new layer
          */
         void createNewLayer();
 
