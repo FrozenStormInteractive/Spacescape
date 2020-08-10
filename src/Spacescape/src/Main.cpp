@@ -33,6 +33,11 @@ THE SOFTWARE.
 #include "SpacescapeVersion.h"
 #include "MainWindow.h"
 
+#include "Logging/LogMessageHandler.h"
+#include "Logging/CompoundLogOutput.h"
+#include "Logging/FileLogOutput.h"
+#include "Logging/ConsoleLogOutput.h"
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_MAC
@@ -50,6 +55,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(spacescape::VersionStr);
 
     QApplication app(argc, argv);
+
+    QSharedPointer<spacescape::CompoundLogOutput> logOutput = QSharedPointer<spacescape::CompoundLogOutput>::create(std::initializer_list<QSharedPointer<spacescape::ILogOutput>>{
+        QSharedPointer<spacescape::FileLogOutput>::create("spacescape.log"),
+        QSharedPointer<spacescape::ConsoleLogOutput>::create(),
+    });
+    qInstallMessageHandler(spacescape::CreateLogMessageHandler(logOutput));
+
     spacescape::MainWindow w;
     w.show();
 
