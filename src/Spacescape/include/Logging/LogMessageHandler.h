@@ -7,6 +7,8 @@
 
 namespace spacescape
 {
+    void InitLogMessageHandler(QSharedPointer<ILogOutput> output);
+
     QtMessageHandler CreateLogMessageHandler(QSharedPointer<ILogOutput> output);
 }
 

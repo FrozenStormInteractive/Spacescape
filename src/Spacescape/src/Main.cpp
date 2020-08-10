@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         QSharedPointer<spacescape::FileLogOutput>::create("spacescape.log"),
         QSharedPointer<spacescape::ConsoleLogOutput>::create(),
     });
-    qInstallMessageHandler(spacescape::CreateLogMessageHandler(logOutput));
+    spacescape::InitLogMessageHandler(logOutput);
 
     spacescape::MainWindow w;
     w.show();

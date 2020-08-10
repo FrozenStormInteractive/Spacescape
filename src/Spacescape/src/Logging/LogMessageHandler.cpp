@@ -11,6 +11,10 @@ void InternalLogMessageHandler(QtMsgType type, const QMessageLogContext &context
 
 namespace spacescape
 {
+    void InitLogMessageHandler(QSharedPointer<ILogOutput> output) {
+        qInstallMessageHandler(spacescape::CreateLogMessageHandler(output));
+    }
+
     QtMessageHandler CreateLogMessageHandler(QSharedPointer<ILogOutput> output) {
         CurrentLogOutput = output;
         return InternalLogMessageHandler;
