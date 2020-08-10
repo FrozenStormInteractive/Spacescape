@@ -16,7 +16,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Spacescape.qrc">
-    <normaloff>:/spacescape/resources/spacescape-logo.ico</normaloff>:/spacescape/resources/spacescape-logo.ico</iconset>
+    <normaloff>:/spacescape/icon-small</normaloff>:/spacescape/icon-small</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">

@@ -25,6 +25,10 @@ set(SPC_RESOURCES Spacescape.qrc)
 
 qt5_add_resources(SPC_SOURCES ${SPC_RESOURCES})
 
+if(WIN32)
+    list(APPEND SPC_RESOURCES Spacescape.rc)
+endif()
+
 add_executable(Spacescape ${SPC_SOURCES} ${SPC_HEADERS} ${SPC_RESOURCES})
 
 target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser OgreMain OgreBitesQt)

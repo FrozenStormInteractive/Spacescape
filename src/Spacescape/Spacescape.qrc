@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/spacescape">
+        <file alias="icon">resources/icons/icon-64.png</file>
+        <file alias="icon-small">resources/icons/icon-32.png</file>
+        <file alias="logo">resources/logo.png</file>
+
         <file>resources/page_white_add.png</file>
         <file>resources/page_white_copy.png</file>
         <file>resources/page_white_delete.png</file>
@@ -7,8 +11,7 @@
         <file>resources/page_white_put.png</file>
         <file>resources/bullet_arrow_down.png</file>
         <file>resources/bullet_arrow_up.png</file>
-        <file>resources/spacescape-logo.png</file>
-	    <file>resources/spacescape-logo.ico</file>
+
         <file>resources/stylesheet.qss</file>
     </qresource>
 </RCC>
