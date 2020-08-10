@@ -1,6 +1,9 @@
 #ifndef SPACESCAPE_LOG_H
 #define SPACESCAPE_LOG_H
 
+#include <qlogging.h>
+#include <QtDebug>
+
 #include <QDateTime>
 #include <QMessageLogContext>
 
