@@ -6,20 +6,9 @@ add_subdirectory(external/QtPropertyBrowser5)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SpacescapeVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapeVersion.h)
 
-set(SPC_SOURCES src/Main.cpp
-        src/AboutDialog.cpp
-        src/AboutDialog.ui
-        src/ExportFileDialog.cpp
-        src/MainWindow.cpp
-        src/MainWindow.ui
-        src/PreviewWidget.cpp
-        src/PropertyBrowser/QtFilePathProperty.cpp)
+file(GLOB_RECURSE SPC_SOURCES src/*.cpp src/*.ui)
 
-set(SPC_HEADERS include/AboutDialog.h
-        include/MainWindow.h
-        include/ExportFileDialog.h
-        include/PreviewWidget.h
-        include/PropertyBrowser/QtFilePathProperty.h)
+file(GLOB_RECURSE SPC_HEADERS include/*.h)
 
 set(SPC_RESOURCES Spacescape.qrc)
 
