@@ -31,7 +31,7 @@ steps:
   - task: CMake@1
     inputs:
       workingDirectory: $(Build.BinariesDirectory)
-      cmakeArgs: $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=MinSizeRel -DSPC_VERSION_BUILD=$(Build.SourceVersion)
+      cmakeArgs: $(Build.SourcesDirectory) -DSPACESCAPE_USE_CONAN=OFF -DCMAKE_BUILD_TYPE=MinSizeRel -DSPC_VERSION_BUILD=$(Build.SourceVersion)
     displayName: 'Configure'
 
   - task: CMake@1
