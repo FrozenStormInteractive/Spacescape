@@ -65,9 +65,9 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * [FamFamFam](http://www.famfamfam.com) for the [Silk icons](http://www.famfamfam.com/lab/icons/silk/)
 
-[Build Status Master Windows]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?job=Windows "Build Status Master Windows"
-[Build Status Master Linux]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?job=Linux "Build Status Master Linux"
-[Build Status Master macOS]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?job=MacOS "Build Status Master macOS"
-[Build Status Develop Windows]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?job=Windows "Build Status Develop Windows"
-[Build Status Develop Linux]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?job=Linux "Build Status Develop Linux"
-[Build Status Develop macOS]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?job=MacOS "Build Status Develop macOS"
+[Build Status Master Windows]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?stage=Windows "Build Status Master Windows"
+[Build Status Master Linux]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?stage=Linux "Build Status Master Linux"
+[Build Status Master macOS]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/master?stage=MacOS "Build Status Master macOS"
+[Build Status Develop Windows]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?stage=Windows "Build Status Develop Windows"
+[Build Status Develop Linux]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?stage=Linux "Build Status Develop Linux"
+[Build Status Develop macOS]: https://img.shields.io/azure-devops/build/FrozenStormInteractive/c7771d24-d619-4d69-963a-3220f6421a95/6/develop?stage=MacOS "Build Status Develop macOS"
