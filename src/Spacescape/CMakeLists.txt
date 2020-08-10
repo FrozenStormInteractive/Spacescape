@@ -24,6 +24,10 @@ target_link_libraries(Spacescape SpacescapePlugin Qt5::Widgets QtPropertyBrowser
 target_include_directories(Spacescape PUBLIC include ${CMAKE_CURRENT_BINARY_DIR}/include)
 set_target_properties(Spacescape PROPERTIES AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set_property(TARGET Spacescape PROPERTY WIN32_EXECUTABLE true)
+endif()
+
 file(GLOB_RECURSE MEDIA media/*)
 source_group("media/materials/textures" FILES ${MEDIA})
 
