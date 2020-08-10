@@ -14,6 +14,25 @@ project(Spacescape VERSION ${SPC_VERSION_MAJOR}.${SPC_VERSION_MINOR}.${SPC_VERSI
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
+include(ExternalModule)
+
+option(SPACESCAPE_USE_CONAN "" OFF)
+option(SPACESCAPE_USE_AUTOCONAN "" OFF)
+
+if(SPACESCAPE_USE_CONAN)
+	if(SPACESCAPE_USE_AUTOCONAN)
+		external_module(FILENAME conan.cmake URL https://raw.githubusercontent.com/conan-io/cmake-conan/v0.15/conan.cmake)
+
+		conan_add_remote(NAME bincrafters URL https://api.bintray.com/conan/bincrafters/public-conan)
+		conan_add_remote(NAME utopia URL https://api.bintray.com/conan/konradnotantoo/utopia)
+
+		conan_cmake_run(BASIC_SETUP CONANFILE conanfile.txt CMAKE_TARGETS BUILD missing)
+	else()
+		include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+		conan_basic_setup(TARGETS)
+	endif()
+endif()
+
 include(GNUInstallDirs)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

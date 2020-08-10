@@ -1,0 +1,17 @@
+[requires]
+qt/5.15.0@bincrafters/stable
+ogre3d/1.12.5@utopia/testing
+
+freetype/2.10.1
+libpng/1.6.37
+zlib/1.2.11
+bzip2/1.0.8
+libjpeg/9d
+
+[generators]
+cmake
+cmake_find_package
+
+[imports]
+bin, *.dll -> ./bin
+lib, *.dylib* -> ./bin
