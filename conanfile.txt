@@ -1,4 +1,5 @@
 [requires]
+tinyxml2/8.0.0
 qt/5.15.0@bincrafters/stable
 ogre3d/1.12.5@utopia/testing
 
