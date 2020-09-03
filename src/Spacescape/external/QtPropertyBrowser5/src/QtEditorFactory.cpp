@@ -2696,5 +2696,5 @@ void QtFontEditorFactory::disconnectPropertyManager(QtFontPropertyManager *manag
 
 QT_END_NAMESPACE
 
-#include "moc_qteditorfactory.cpp"
-#include "qteditorfactory.moc"
+#include "moc_QtEditorFactory.cpp"
+#include "QtEditorFactory.moc"
