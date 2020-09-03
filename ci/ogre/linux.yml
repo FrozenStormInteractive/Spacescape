@@ -1,6 +1,7 @@
 steps:
-  - script: sudo apt-get install libxaw7-dev libzzip-dev libxrandr-dev libfreetype6-dev libxt-dev libgles2-mesa-dev mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev  nvidia-cg-dev libpugixml-dev libfreeimage-dev qtbase5-dev
-    displayName: 'Install dependencies'
+  - script: sudo apt-get install ninja-build libxaw7-dev libzzip-dev libxrandr-dev libfreetype6-dev libxt-dev libgles2-mesa-dev mesa-common-dev 
+      libgl1-mesa-dev libglu1-mesa-dev  nvidia-cg-dev libpugixml-dev libfreeimage-dev qtbase5-dev
+    displayName: Install dependencies
 
   - template: ogre.yml
     parameters:
