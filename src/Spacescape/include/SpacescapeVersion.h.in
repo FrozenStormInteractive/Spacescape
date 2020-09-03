@@ -3,15 +3,15 @@
 
 namespace spacescape
 {
-    constexpr char* VersionStr = u8"@SPC_VERSION@";
+    constexpr char* VersionStr = "@SPC_VERSION@";
 
-    constexpr char* VersionMajorStr = u8"@SPC_VERSION_MAJOR@";
+    constexpr char* VersionMajorStr = "@SPC_VERSION_MAJOR@";
     constexpr int VersionMajorNumber = @SPC_VERSION_MAJOR@;
-    constexpr char* VersionMinorStr = u8"@SPC_VERSION_MINOR@";
+    constexpr char* VersionMinorStr = "@SPC_VERSION_MINOR@";
     constexpr int VersionMinorNumber = @SPC_VERSION_MINOR@;
-    constexpr char* VersionPatchStr = u8"@SPC_VERSION_PATCH@";
+    constexpr char* VersionPatchStr = "@SPC_VERSION_PATCH@";
     constexpr int VersionPatchNumber = @SPC_VERSION_PATCH@;
-    constexpr char* VersionBuildStr = u8"@SPC_VERSION_BUILD@";
+    constexpr char* VersionBuildStr = "@SPC_VERSION_BUILD@";
 }
 
 #endif // SPC_VERSION_H
