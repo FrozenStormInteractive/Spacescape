@@ -55,3 +55,37 @@ find_package(OGRE 1.12 REQUIRED)
 add_subdirectory(src/Spacescape)
 add_subdirectory(src/SpacescapePlugin)
 add_subdirectory(share)
+
+set(CPACK_GENERATOR "STGZ" "TGZ" "ZIP")
+if(WIN32 AND NOT UNIX)
+	list(APPEND CPACK_GENERATOR "NSIS")
+	set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows/installer.ico")
+	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows/uninstaller.ico")
+	set(CPACK_NSIS_HELP_LINK "https://github.com/FrozenStormInteractive/spacescape")
+	set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/FrozenStormInteractive/spacescape")
+elseif(UNIX)
+	if(APPLE)
+		list(APPEND CPACK_GENERATOR "DragNDrop" "Bundle")
+	else()
+		list(APPEND CPACK_GENERATOR "DEB" "RPM")
+	endif()
+endif()
+set(CPACK_PACKAGE_VENDOR "FrozenStorm Interactive")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An awesome free & open-source tool for creating space skyboxes with stars and nebulas")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+set(CPACK_SOURCE_IGNORE_FILES
+    /.git
+	/dist
+	/out
+	/build
+    /.*build.*
+    /\\\\.DS_Store
+)
+
+include(CPack)
