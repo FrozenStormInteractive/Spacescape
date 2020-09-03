@@ -7,7 +7,7 @@ trigger:
 
 variables:
   QtVersion: 5.12.8
-  OgreVersion: 1.12.6
+  OgreVersion: 1.12.8
 
 stages:
   - stage: Windows
