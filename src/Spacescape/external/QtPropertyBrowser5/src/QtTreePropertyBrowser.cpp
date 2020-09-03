@@ -38,8 +38,6 @@
 **
 ****************************************************************************/
 
-
-#include "qttreepropertybrowser.h"
 #include <QSet>
 #include <QIcon>
 #include <QTreeWidget>
@@ -51,6 +49,8 @@
 #include <QFocusEvent>
 #include <QStyle>
 #include <QPalette>
+
+#include "QtTreePropertyBrowser.h"
 
 QT_BEGIN_NAMESPACE
 

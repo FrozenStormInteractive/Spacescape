@@ -42,7 +42,7 @@
 #ifndef QTPROPERTYMANAGER_H
 #define QTPROPERTYMANAGER_H
 
-#include "qtpropertybrowser.h"
+#include "QtPropertyBrowser.h"
 #include <QLineEdit>
 
 QT_BEGIN_NAMESPACE

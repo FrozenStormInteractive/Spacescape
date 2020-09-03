@@ -42,7 +42,7 @@
 #ifndef QTBUTTONPROPERTYBROWSER_H
 #define QTBUTTONPROPERTYBROWSER_H
 
-#include "qtpropertybrowser.h"
+#include "QtPropertyBrowser.h"
 
 QT_BEGIN_NAMESPACE
 

@@ -38,9 +38,6 @@
 **
 ****************************************************************************/
 
-
-#include "qtpropertymanager.h"
-#include "qtpropertybrowserutils_p.h"
 #include <QDateTime>
 #include <QLocale>
 #include <QMap>
@@ -58,6 +55,9 @@
 
 #include <limits.h>
 #include <float.h>
+
+#include "QtPropertyManager.h"
+#include "QtPropertyBrowserUtils_p.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */

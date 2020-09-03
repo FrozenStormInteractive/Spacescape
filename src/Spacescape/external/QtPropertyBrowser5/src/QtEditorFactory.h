@@ -42,7 +42,7 @@
 #ifndef QTEDITORFACTORY_H
 #define QTEDITORFACTORY_H
 
-#include "qtpropertymanager.h"
+#include "QtPropertyManager.h"
 
 QT_BEGIN_NAMESPACE
 

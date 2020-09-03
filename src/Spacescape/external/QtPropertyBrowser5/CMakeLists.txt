@@ -5,25 +5,25 @@ include(GenerateExportHeader)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
-set(SOURCES src/qtpropertybrowser.cpp
-		src/qtpropertymanager.cpp
-		src/qteditorfactory.cpp
-		src/qtvariantproperty.cpp
-		src/qttreepropertybrowser.cpp
-		src/qtbuttonpropertybrowser.cpp
-		src/qtgroupboxpropertybrowser.cpp
-		src/qtpropertybrowserutils.cpp)
+set(SOURCES src/QtPropertyBrowser.cpp
+		src/QtPropertyManager.cpp
+		src/QtEditorFactory.cpp
+		src/QtVariantProperty.cpp
+		src/QtTreePropertyBrowser.cpp
+		src/QtButtonPropertyBrowser.cpp
+		src/QtGroupBoxPropertyBrowser.cpp
+		src/QtPropertyBrowserUtils.cpp)
 
-set(HEADERS src/qtpropertybrowser.h
-		src/qtpropertymanager.h
-		src/qteditorfactory.h
-		src/qtvariantproperty.h
-		src/qttreepropertybrowser.h
-		src/qtbuttonpropertybrowser.h
-		src/qtgroupboxpropertybrowser.h
-		src/qtpropertybrowserutils_p.h)
+set(HEADERS src/QtPropertyBrowser.h
+		src/QtPropertyManager.h
+		src/QtEditorFactory.h
+		src/QtVariantProperty.h
+		src/QtTreePropertyBrowser.h
+		src/QtButtonPropertyBrowser.h
+		src/QtGroupBoxPropertyBrowser.h
+		src/QtPropertyBrowserUtils_p.h)
 
-set(RESOURCES src/qtpropertybrowser.qrc)
+set(RESOURCES src/QtPropertyBrowser.qrc)
 qt5_add_resources(SOURCES ${RESOURCES})
 
 add_library(QtPropertyBrowser ${SOURCES} ${HEADERS} ${RESOURCES})

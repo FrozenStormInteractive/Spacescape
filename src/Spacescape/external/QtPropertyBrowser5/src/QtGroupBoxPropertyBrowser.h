@@ -42,7 +42,7 @@
 #ifndef QTGROUPBOXPROPERTYBROWSER_H
 #define QTGROUPBOXPROPERTYBROWSER_H
 
-#include "qtpropertybrowser.h"
+#include "QtPropertyBrowser.h"
 
 QT_BEGIN_NAMESPACE
 

@@ -42,7 +42,7 @@
 #ifndef QTTREEPROPERTYBROWSER_H
 #define QTTREEPROPERTYBROWSER_H
 
-#include "qtpropertybrowser.h"
+#include "QtPropertyBrowser.h"
 
 QT_BEGIN_NAMESPACE
 

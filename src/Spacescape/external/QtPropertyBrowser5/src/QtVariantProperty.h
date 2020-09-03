@@ -42,7 +42,7 @@
 #ifndef QTVARIANTPROPERTY_H
 #define QTVARIANTPROPERTY_H
 
-#include "qtpropertybrowser.h"
+#include "QtPropertyBrowser.h"
 #include <QVariant>
 #include <QIcon>
 

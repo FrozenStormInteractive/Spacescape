@@ -38,9 +38,6 @@
 **
 ****************************************************************************/
 
-
-#include "qteditorfactory.h"
-#include "qtpropertybrowserutils_p.h"
 #include <QSpinBox>
 #include <QScrollBar>
 #include <QComboBox>
@@ -59,6 +56,9 @@
 #include <QStyleOption>
 #include <QPainter>
 #include <QMap>
+
+#include "QtEditorFactory.h"
+#include "QtPropertyBrowserUtils_p.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */

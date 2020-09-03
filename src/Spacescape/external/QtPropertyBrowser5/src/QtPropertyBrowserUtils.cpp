@@ -38,8 +38,6 @@
 **
 ****************************************************************************/
 
-
-#include "qtpropertybrowserutils_p.h"
 #include <QApplication>
 #include <QPainter>
 #include <QHBoxLayout>
@@ -48,6 +46,8 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QStyleOption>
+
+#include "QtPropertyBrowserUtils_p.h"
 
 QT_BEGIN_NAMESPACE
 

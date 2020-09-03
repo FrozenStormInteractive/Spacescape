@@ -9,7 +9,7 @@
 #ifndef __Spacescape__QtFilePathManager__
 #define __Spacescape__QtFilePathManager__
 
-#include <qtpropertybrowser.h>
+#include <QtPropertyBrowser.h>
 #include <QWidget>
 #include <QLineEdit>
 

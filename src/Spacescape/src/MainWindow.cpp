@@ -32,9 +32,9 @@ THE SOFTWARE.
 #include <QProgressDialog>
 #include <QFileDialog>
 
-#include "qtpropertymanager.h"
-#include "qtvariantproperty.h"
-#include "qttreepropertybrowser.h"
+#include "QtPropertyManager.h"
+#include "QtVariantProperty.h"
+#include "QtTreePropertyBrowser.h"
 #include "PropertyBrowser/QtFilePathProperty.h"
 
 

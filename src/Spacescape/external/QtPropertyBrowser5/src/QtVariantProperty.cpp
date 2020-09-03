@@ -38,14 +38,14 @@
 **
 ****************************************************************************/
 
-
-#include "qtvariantproperty.h"
-#include "qtpropertymanager.h"
-#include "qteditorfactory.h"
 #include <QVariant>
 #include <QIcon>
 #include <QDate>
 #include <QLocale>
+
+#include "QtVariantProperty.h"
+#include "QtPropertyManager.h"
+#include "QtEditorFactory.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
