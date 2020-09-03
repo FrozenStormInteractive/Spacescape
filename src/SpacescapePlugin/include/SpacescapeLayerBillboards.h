@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "SpacescapeLayer.h"
 #include "OgreBillboardSet.h"
 #include "SpacescapeBillboardSet.h"
+#include "OgreMovableObject.h"
 
 namespace Ogre
 {
@@ -50,22 +51,22 @@ namespace Ogre
 
         /** Destructor
         */
-        ~SpacescapeLayerBillboards(void);
+        ~SpacescapeLayerBillboards();
 
        /** Get the layer type
         @return the layer type
         */
-        String getLayerTypeName(void) { return "billboards"; }
+        String LayerTypeName() { return "billboards"; }
 
         /** Get the layer type
         @return the layer type
         */
-        int getLayerType(void) { return SpacescapePlugin::SLT_BILLBOARDS; }
+        int LayerType() { return SpacescapePlugin::SLT_BILLBOARDS; }
 
        /** Return our billboard set
         @return this object instance
         */
-        MovableObject* getMovableObject() { return mBillboardSet; }
+       Ogre::MovableObject* GetMovableObject() { return mBillboardSet; }
 
         /** Initialize this layer based on the given params
         @remarks Params for this layer type are:
@@ -79,7 +80,7 @@ namespace Ogre
         texture - string (i.e. "my-flare.png")
         @param params Layer params that are specific to this class
         */
-        void init(Ogre::NameValuePairList params);
+        void Init(Ogre::NameValuePairList params);
 
     protected:
         /** Utility function for updating saved params list

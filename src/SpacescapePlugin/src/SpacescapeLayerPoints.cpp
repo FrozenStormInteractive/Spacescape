@@ -364,7 +364,7 @@ namespace Ogre
     seed - unsigned int (string i.e. "999")
     @param params Layer params that will be specific to the derived class
     */
-    void SpacescapeLayerPoints::init(Ogre::NameValuePairList params)
+    void SpacescapeLayerPoints::Init(Ogre::NameValuePairList params)
     {
         bool shouldUpdate = false;
 

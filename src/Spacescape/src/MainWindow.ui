@@ -185,7 +185,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="spacescape::PreviewWidget" name="ogreWindow" native="true">
+      <widget class="spacescape::PreviewWidget" name="previewWindow" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>100</horstretch>

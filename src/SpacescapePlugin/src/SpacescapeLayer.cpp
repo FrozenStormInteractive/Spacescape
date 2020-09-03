@@ -66,16 +66,16 @@ namespace Ogre
         // create our noise material
         mNoiseMaterial = OGRE_NEW_T(SpacescapeNoiseMaterial,MEMCATEGORY_GENERAL);
 
-        setHDREnabled(mHDREnabled);
+        SetHDREnabled(mHDREnabled);
     }
 
     /* Destructor
     */
-    SpacescapeLayer::~SpacescapeLayer(void)
+    SpacescapeLayer::~SpacescapeLayer()
     {
         if(mNoiseMaterial) {
             OGRE_DELETE_T(mNoiseMaterial, SpacescapeNoiseMaterial, MEMCATEGORY_GENERAL);
-            mNoiseMaterial = NULL;
+            mNoiseMaterial = nullptr;
         }
 
         if(mRTTManualObject) {
@@ -559,7 +559,7 @@ namespace Ogre
     /** Set hdr enabled
      @param enabled true to enable, false to disable
      */
-    void SpacescapeLayer::setHDREnabled(bool enabled)
+    void SpacescapeLayer::SetHDREnabled(bool enabled)
     {
         mHDREnabled = enabled;
 		mMaskFBOPixelFormat = PF_A8R8G8B8;
@@ -706,6 +706,6 @@ namespace Ogre
         // update shared params
         mParams["seed"] = StringConverter::toString(mSeed);
         mParams["name"] = getName();
-        mParams["type"] = getLayerTypeName();
+        mParams["type"] = LayerTypeName();
     }
 }

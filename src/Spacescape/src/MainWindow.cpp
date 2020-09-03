@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->layerProperties->setRootIsDecorated(true);
 
     // set us as a progress listener
-    ui->ogreWindow->setProgressListener(this);
+    ui->previewWindow->setProgressListener(this);
 
     // add a signal for when properties are changed
     connect(mPropertyManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
@@ -169,13 +169,13 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
     if(!mDebugLayerLoaded &&
-       ui->ogreWindow->pluginReady()) {
+       ui->previewWindow->pluginReady()) {
 #ifdef _DEBUG
          Ogre::NameValuePairList params;
-         ui->ogreWindow->addLayer(1,params);
+         ui->previewWindow->addLayer(1,params);
          
          // insert the new layer
-         insertLayerProperties(ui->ogreWindow->getLayers().back());
+         insertLayerProperties(ui->previewWindow->getLayers().back());
 #endif
         mDebugLayerLoaded = true;
     }
@@ -203,7 +203,7 @@ QtVariantProperty* MainWindow::createProperty(const Ogre::String& key, const Ogr
         << "dest_alpha" << "src_alpha" << "one_minus_dest_alpha" 
         << "one_minus_src_alpha";
     textureSizes << "256" << "512" << "1024" << "2048" << "4096";
-    if(ui->ogreWindow->isHDREnabled()) {
+    if(ui->previewWindow->isHDREnabled()) {
         billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr"  << "hdr-flare-white2.exr";
         billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
     }
@@ -508,7 +508,7 @@ QtProperty* MainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtPr
     mRefreshing = true;
 
     // get layer params
-    Ogre::NameValuePairList params = layer->getParams();
+    Ogre::NameValuePairList params = layer->Params();
 
     // create the layer properties object
     QtProperty *layerProperties = mPropertyManager->addProperty(
@@ -526,7 +526,7 @@ QtProperty* MainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtPr
 
     // add the common layer params to the subproperties first
     layerProperties->addSubProperty(createProperty( "name", layer->getName()));
-    layerProperties->addSubProperty(createProperty( "type", layer->getLayerTypeName()));
+    layerProperties->addSubProperty(createProperty( "type", layer->LayerTypeName()));
     layerProperties->addSubProperty(createProperty( "visible", "true"));
     layerProperties->addSubProperty(createProperty( "seed", params["seed"]));
 
@@ -541,7 +541,7 @@ QtProperty* MainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtPr
         
         // skip hdr stuff if not enabled
         if(pl->first == "hdrMultiplier" || pl->first == "hdrPower") {
-            if(!ui->ogreWindow->isHDREnabled())
+            if(!ui->previewWindow->isHDREnabled())
                 continue;
         }
 
@@ -598,7 +598,7 @@ QtProperty* MainWindow::insertLayerProperties(Ogre::SpacescapeLayer* layer, QtPr
 void MainWindow::createNew()
 {
     // TODO: prompt to save first
-    ui->ogreWindow->clearLayers();
+    ui->previewWindow->clearLayers();
     refreshProperties();
 }
 
@@ -613,7 +613,7 @@ void MainWindow::openFile()
     );
 
     // disable ogre window till done opening to prevent crashes
-    ui->ogreWindow->setDisabled(true);
+    ui->previewWindow->setDisabled(true);
 
     if(!filename.isNull() && !filename.isEmpty()) {
         QFileInfo fi(filename);
@@ -631,7 +631,7 @@ void MainWindow::openFile()
         // ui->mProgressDialog->setValue(0);
         // ui->mProgressDialog->show();
 
-        if(ui->ogreWindow->open(filename)) {
+        if(ui->previewWindow->open(filename)) {
             mFilename = filename;
 
             QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
@@ -647,7 +647,7 @@ void MainWindow::openFile()
         }
     }
 
-    ui->ogreWindow->setDisabled(false);
+    ui->previewWindow->setDisabled(false);
 }
 
 void MainWindow::save()
@@ -676,7 +676,7 @@ void MainWindow::save()
             ui->statusBar->showMessage("Saving " + mFilename);
 
             // save this file!
-            if(ui->ogreWindow->save(mFilename)) {
+            if(ui->previewWindow->save(mFilename)) {
                 QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
                 setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
 
@@ -711,7 +711,7 @@ void MainWindow::saveAs()
             settings.setValue("LastSaveDir",mLastSaveDir);
 
             // save this file!
-            if(ui->ogreWindow->save(mFilename)) {
+            if(ui->previewWindow->save(mFilename)) {
                 QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
                 setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
             }
@@ -723,7 +723,7 @@ void MainWindow::showDebugBox()
 {
     static bool debugVisible = false;
     debugVisible = !debugVisible;
-    ui->ogreWindow->setDebugBoxVisible(debugVisible);
+    ui->previewWindow->setDebugBoxVisible(debugVisible);
     if(debugVisible) {
         ui->actionShowDebugBox->setText(tr("Hide Debug Box"));
     } else {
@@ -736,7 +736,7 @@ void MainWindow::enableHDR()
     static bool hdrEnabled = false;
     hdrEnabled = !hdrEnabled;
 
-    ui->ogreWindow->setHDREnabled(hdrEnabled);
+    ui->previewWindow->setHDREnabled(hdrEnabled);
     if(hdrEnabled) {
         ui->actionEnableHDR->setText(tr("Disable HDR"));
     } else {
@@ -757,11 +757,11 @@ void MainWindow::createNewLayer()
     ui->statusBar->showMessage("Creating new layer...");
 
     Ogre::NameValuePairList params;
-    ui->ogreWindow->addLayer(0,params);
+    ui->previewWindow->addLayer(0,params);
 
     ui->statusBar->showMessage("Creating new layer properties list...");
 
-    insertLayerProperties(ui->ogreWindow->getLayers().back());
+    insertLayerProperties(ui->previewWindow->getLayers().back());
 
     ui->statusBar->showMessage("New layer created",3000);
 }
@@ -771,16 +771,16 @@ void MainWindow::copySelectedLayer()
     // copy this layer
     int layerId = getSelectedLayerId();
     if(layerId != -1) {
-        int newLayerId = ui->ogreWindow->copyLayer(layerId);
+        int newLayerId = ui->previewWindow->copyLayer(layerId);
 
         // insert the new layer
         QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
         if((bl.size() - layerId - 1) == 0) {
             // insert at beginning of properties list
-            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId]);
+            insertLayerProperties(ui->previewWindow->getLayers()[newLayerId]);
         } else {
             // insert before the copied property
-            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId], ui->layerProperties->properties()[bl.size() - layerId - 2]);
+            insertLayerProperties(ui->previewWindow->getLayers()[newLayerId], ui->layerProperties->properties()[bl.size() - layerId - 2]);
         }
     }
 }
@@ -790,7 +790,7 @@ void MainWindow::deleteSelectedLayer()
     // get the selected layer
     int layerId = getSelectedLayerId();
     if(layerId != -1) {
-        ui->ogreWindow->deleteLayer(layerId);
+        ui->previewWindow->deleteLayer(layerId);
         QList<QtBrowserItem*> bl = ui->layerProperties->topLevelItems();
         ui->layerProperties->removeProperty(bl[bl.size() - layerId - 1]->property());
     }
@@ -801,7 +801,7 @@ void MainWindow::moveSelectedLayerDown()
     // get the selected layer
     int layerId = getSelectedLayerId();
     if(layerId > -1) {
-        if(ui->ogreWindow->moveLayerDown(layerId)) {
+        if(ui->previewWindow->moveLayerDown(layerId)) {
             QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
             const int index = bl.size() - layerId - 1;
             QtProperty *p = bl[index]->property();
@@ -839,7 +839,7 @@ void MainWindow::moveSelectedLayerUp()
     // get the selected layer
     int layerId = getSelectedLayerId();
     if(layerId > -1) {
-        if(ui->ogreWindow->moveLayerUp(layerId)) {
+        if(ui->previewWindow->moveLayerUp(layerId)) {
             QList<QtBrowserItem *> bl = ui->layerProperties->topLevelItems();
             const int index = bl.size() - layerId - 1;
             QtProperty *p = bl[index]->property();
@@ -883,7 +883,7 @@ void MainWindow::onExport()
     QSettings settings;
     QString orientation;
     
-    if(ui->ogreWindow->isHDREnabled()) {
+    if(ui->previewWindow->isHDREnabled()) {
         outputTypes = QLatin1String("6 EXR files(*.exr);;Single DDS Cube Map(*.dds)");
     } else {
         outputTypes = QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg);;6 TGA files(*.tga);;Single DDS Cube Map(*.dds)");
@@ -918,7 +918,7 @@ void MainWindow::onExport()
     settings.setValue("orientation", orientation);
     
     // disable ogre window till done exporting to prevent crashes
-    ui->ogreWindow->setDisabled(true);
+    ui->previewWindow->setDisabled(true);
 
     if(!filename.isNull() && !filename.isEmpty()) {
         // make sure we have an extension on the filename
@@ -962,7 +962,7 @@ void MainWindow::onExport()
         }
         
         // ogre can't export dds files doh!
-		ui->ogreWindow->exportSkybox(filename,
+		ui->previewWindow->exportSkybox(filename,
                                      imageSize.toUInt(),
                                      cubeMap,
                                      skyboxOrientation);
@@ -970,7 +970,7 @@ void MainWindow::onExport()
         ui->statusBar->showMessage("Exported skybox " + filename,3000);
     }
 
-    ui->ogreWindow->setDisabled(false);
+    ui->previewWindow->setDisabled(false);
 
 }
 
@@ -983,7 +983,7 @@ void MainWindow::refreshProperties()
     mPropertyManager->clear();
 
     // get all layers and add them to the property list in reverse order
-    std::vector<Ogre::SpacescapeLayer *> layers = ui->ogreWindow->getLayers();
+    std::vector<Ogre::SpacescapeLayer *> layers = ui->previewWindow->getLayers();
     if(!layers.empty()) {
         QtProperty *layer = NULL;
 
@@ -1041,7 +1041,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
     }
 
     // did we find a valid layer id?
-    std::vector<Ogre::SpacescapeLayer *> layers = ui->ogreWindow->getLayers();
+    std::vector<Ogre::SpacescapeLayer *> layers = ui->previewWindow->getLayers();
     if(layerId > -1 && layerId < (int)l.size() && layerId < (int)layers.size()) {
         Ogre::NameValuePairList params;
         Ogre::String propertyStr = getProperty(property->propertyName());
@@ -1058,7 +1058,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
 #ifdef Q_WS_MAC
         else if(propertyStr == "texture") {
             QStringList billboardTextures;
-            if(ui->ogreWindow->isHDREnabled()) {
+            if(ui->previewWindow->isHDREnabled()) {
                 billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr" << "hdr-flare-white2.exr";
                 billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
             }
@@ -1096,7 +1096,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
             params[propertyStr] = Ogre::String(blendTypes[value.toUInt()].toStdString());
         }
         else if(propertyStr == "visible") {
-            ui->ogreWindow->setLayerVisible(layerId, value.toBool());
+            ui->previewWindow->setLayerVisible(layerId, value.toBool());
         }
         else {
             params[propertyStr] = Ogre::String(value.toString().toStdString());
@@ -1104,7 +1104,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
 
         // update the layer with new parameter settings
         if(!params.empty()) {
-            ui->ogreWindow->updateLayer(layerId,params);
+            ui->previewWindow->updateLayer(layerId,params);
         }
 
         // refresh layer properties if necessary
@@ -1117,10 +1117,10 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
 
             // re-insert new properties
             if(!bl.empty() && layerId != bl.size()) {
-                insertLayerProperties(ui->ogreWindow->getLayers()[layerId],bl[bl.size() - layerId - 1]->property(),false);
+                insertLayerProperties(ui->previewWindow->getLayers()[layerId],bl[bl.size() - layerId - 1]->property(),false);
             }
             else {
-                insertLayerProperties(ui->ogreWindow->getLayers()[layerId],0,false);
+                insertLayerProperties(ui->previewWindow->getLayers()[layerId],0,false);
             }
         }
     }
@@ -1160,11 +1160,11 @@ void MainWindow::valueChanged(QtProperty *property, const QString &value)
     }
     
     // did we find a valid layer id?
-    std::vector<Ogre::SpacescapeLayer *> layers = ui->ogreWindow->getLayers();
+    std::vector<Ogre::SpacescapeLayer *> layers = ui->previewWindow->getLayers();
     if(layerId > -1 && layerId < (int)l.size() && layerId < (int)layers.size()) {
         Ogre::NameValuePairList params;
         Ogre::String propertyStr = getProperty(property->propertyName());
         params[propertyStr] = Ogre::String(value.toStdString());
-        ui->ogreWindow->updateLayer(layerId,params);
+        ui->previewWindow->updateLayer(layerId,params);
     }
 }

@@ -41,8 +41,8 @@ using namespace spacescape;
 const float PreviewWidget::mRADIUS = (float)0.8;
 
 PreviewWidget::PreviewWidget(QWidget *parent) : QWidget(parent, Qt::WindowType::Widget),
-    mProgressListener(nullptr)
-    // mOgreCtx("Spacescape")
+    mProgressListener(nullptr),
+    mOgreCtx("Spacescape")
 {
 	mSceneMgr = nullptr;
 	mViewPort = nullptr;
@@ -58,7 +58,7 @@ int PreviewWidget::addLayer(int type, const Ogre::NameValuePairList& params)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         int ret = plugin->addLayer(type, params);
-        //mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
@@ -70,7 +70,7 @@ void PreviewWidget::clearLayers()
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->clear();
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
@@ -79,7 +79,7 @@ int PreviewWidget::copyLayer(unsigned int layerID)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         int ret = plugin->duplicateLayer(layerID);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
@@ -91,7 +91,7 @@ bool PreviewWidget::deleteLayer(unsigned int layerID)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->deleteLayer(layerID);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
@@ -139,15 +139,15 @@ Ogre::SpacescapePlugin* PreviewWidget::getPlugin()
 void PreviewWidget::paintEvent(QPaintEvent *e)
 {
     QWidget::paintEvent(e);
-    /*if(!mOgreCtx.getRoot()) {
+    if(!mOgreCtx.getRoot()) {
         mOgreCtx.injectMainWindow(windowHandle());
         mOgreCtx.useQtEventLoop(true);
         mOgreCtx.initApp();
 
-        setupResources();
-        setupScene();
-        show();
-    }*/
+        //setupResources();
+        //setupScene();
+        //show();
+    }
 
     //mOgreCtx.getRoot()->renderOneFrame();
 }
@@ -225,7 +225,7 @@ bool PreviewWidget::moveLayerDown(unsigned int layerID)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->moveLayer(layerID,-1);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
@@ -237,7 +237,7 @@ bool PreviewWidget::moveLayerUp(unsigned int layerID)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->moveLayer(layerID,1);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 
@@ -293,7 +293,7 @@ void PreviewWidget::setDebugBoxVisible(bool visible)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setDebugBoxVisible(visible);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
@@ -302,7 +302,7 @@ void PreviewWidget::setHDREnabled(bool enabled)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setHDREnabled(enabled);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
@@ -311,7 +311,7 @@ void PreviewWidget::setLayerVisible(unsigned int layerID, bool visible)
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->setLayerVisible(layerID,visible);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
     }
 }
 
@@ -396,7 +396,7 @@ bool PreviewWidget::updateLayer(unsigned int layerID, const Ogre::NameValuePairL
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         bool ret = plugin->updateLayer(layerID,params);
-        // mOgreCtx.getRoot()->renderOneFrame();
+        mOgreCtx.getRoot()->renderOneFrame();
         return ret;
     }
 

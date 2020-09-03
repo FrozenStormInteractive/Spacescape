@@ -46,65 +46,103 @@ namespace Ogre
     class _SpacescapePluginExport SpacescapeLayer : public ManualObject
     {
     public:
-        /** Constructor
-        */
+        /**
+         * @brief Constructor
+         */
         SpacescapeLayer(const String& name, SpacescapePlugin* plugin);
 
-        /** Destructor
-        */
-        ~SpacescapeLayer(void);
+        /**
+         * @brief Destructor
+         */
+        ~SpacescapeLayer() override;
 
-        /** Get the display high resolution flag value
-        @return the high resolution flag value
-        */
-        bool getDisplayHighRes(void) { return mDisplayHighRes; }
+        /**
+         * @brief Get the layer id
+         *
+         * @return The layer id
+         */
+        unsigned int LayerID() const
+        {
+            return mLayerID;
+        }
 
-        /** Get the layer id
-        @return The layer id
-        */
-        unsigned int getLayerID(void) { return mLayerID; }
+        /**
+         * @brief Get the layer type - string version
+         *
+         * @return the layer type
+         */
+        virtual String LayerTypeName() = 0;
 
-        /** Get the layer type - string version
-        @return the layer type
-        */
-        virtual String getLayerTypeName(void) = 0;
+        /**
+         * @brief Get the layer type
+         *
+         * @return the layer type
+         */
+        virtual int LayerType() = 0;
 
-        /** Get the layer type
-        @return the layer type
-        */
-        virtual int getLayerType(void) = 0;
+        /**
+         * @brief Initialize this layer based on the given params
+         *
+         * @param params Layer params that will be specific to the derived class
+         */
+        virtual void Init(NameValuePairList params) = 0;
 
-        /** Initialize this layer based on the given params
-        @param params Layer params that will be specific to the derived class
-        */
-        virtual void init(NameValuePairList params) = 0;
+        /**
+         * @brief Get the display high resolution flag value
+         *
+         * @return the high resolution flag value
+         */
+        bool DisplayHighRes() const
+        {
+            return mDisplayHighRes;
+        }
 
-        /** Set whether to display the high resolution implementation
-        or the faster preview version
-        @param displayHighRes Whether to display the high resolution or not
-        */
-        virtual void setDisplayHighRes(bool displayHighRes) { mDisplayHighRes = displayHighRes; }
+        /**
+         * @brief Set whether to display the high resolution implementation or the faster preview version
+         *
+         * @param displayHighRes Whether to display the high resolution or not
+         */
+        virtual void SetDisplayHighRes(bool displayHighRes)
+        {
+            mDisplayHighRes = displayHighRes;
+        }
 
-        /** Set hdr enabled
-        @param enabled true to enable, false to disable
-        */
-        virtual void setHDREnabled(bool enabled);
+        /**
+         * @brief Set hdr enabled
+         *
+         * @param enabled true to enable, false to disable
+         */
+        virtual void SetHDREnabled(bool enabled);
         
-        /** Set the layer id
-        @param id The new layer id
-        */
-        virtual void setLayerID(unsigned int id) { mLayerID = id; }
+        /**
+         * @brief Set the layer id
+         *
+         * @param id The new layer id
+         */
+        virtual void SetLayerID(unsigned int id)
+        {
+            mLayerID = id;
+        }
 
-        /** Get the param list used to create this layer
-        @return The param list
-        */
-        NameValuePairList getParams() { return mParams; }
+        /**
+         * @brief Get the param list used to create this layer
+         *
+         * @return The param list
+         */
+        NameValuePairList Params()
+        {
+            return mParams;
+        }
 
-        /** This method allows subclasses to use object types that
-        do not derive from ManualObject
-        @return this object instance
-        */
-        virtual MovableObject* getMovableObject() { return this; }
+        /**
+         * This method allows subclasses to use object types that do not derive from ManualObject
+         *
+         * @return this object instance
+         */
+        virtual MovableObject* MovableObject()
+        {
+            return this;
+        }
 
     protected:
         /** Utility function to add a sphere section with the given material name
@@ -113,7 +151,7 @@ namespace Ogre
         @param material Material name
         @param numSegments number of sphere segments and rings
         */
-        void buildSphere(const String& material, unsigned int segments = 16, ManualObject* manualObj = NULL);
+        void buildSphere(const String& material, unsigned int segments = 16, ManualObject* manualObj = nullptr);
 
        /** Utility noise function for fbm perlin noise
         @param v The 3d position
@@ -122,8 +160,7 @@ namespace Ogre
         @param lacunarity Applied at each level
         @return The noise value
         */
-        Real fbmNoise(Vector3 v, unsigned int octaves = 1, Real gain = 0.5, 
-            Real lacunarity = 2.0);
+        Real fbmNoise(Vector3 v, unsigned int octaves = 1, Real gain = 0.5,  Real lacunarity = 2.0);
 
         /** Utility function to convert a blend mode string to int
         @param param blend mode string like "one" or "dest_colour"

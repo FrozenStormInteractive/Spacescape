@@ -113,14 +113,14 @@ namespace Ogre
         }
 
         // set layer id and render queue
-        mLayers[layerId]->setLayerID(layerId);
+        mLayers[layerId]->SetLayerID(layerId);
 
         // init with the given params
-        mLayers[layerId]->init(params);
-        mLayers[layerId]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + layerId);
+        mLayers[layerId]->Init(params);
+        mLayers[layerId]->MovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + layerId);
 
         // attach the layer to the scene so it can be displayed
-        mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[layerId]->getMovableObject());
+        mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[layerId]->MovableObject());
 
         //#ifdef DEBUG
         // setDebugBoxVisible(true);
@@ -533,11 +533,11 @@ namespace Ogre
             // update the layer ids for all the other layers
             // and re-attach all layers to the scene
             for(unsigned int i = 0; i < mLayers.size(); ++i) {
-                mLayers[i]->setLayerID(i);
+                mLayers[i]->SetLayerID(i);
                 if(mSceneNode) {
                     String layerName = "SpacescapeLayer" + StringConverter::toString(i);
-                    mLayers[i]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
-                    mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[i]->getMovableObject());
+                    mLayers[i]->MovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
+                    mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[i]->MovableObject());
                 }
             }
             return true;
@@ -554,7 +554,7 @@ namespace Ogre
     {
         if(layerId < mLayers.size() && !mLayers.empty()) {
             // duplicate!
-            int newLayerId = addLayer(mLayers[layerId]->getLayerType(),mLayers[layerId]->getParams());
+            int newLayerId = addLayer(mLayers[layerId]->LayerType(),mLayers[layerId]->Params());
             if(newLayerId) {
                 // move the copied layer to be just on top of the original layer
                 int distance = newLayerId - layerId - 1;
@@ -564,8 +564,8 @@ namespace Ogre
 
                 // append the word "copy" to the layer name
                 NameValuePairList newParams;
-                newParams["name"] = mLayers[layerId]->getParams()["name"] + " copy";
-                mLayers[layerId + 1]->init(newParams);
+                newParams["name"] = mLayers[layerId]->Params()["name"] + " copy";
+                mLayers[layerId + 1]->Init(newParams);
             }
 
             return layerId + 1;
@@ -756,11 +756,11 @@ namespace Ogre
             // update the layer ids for all the other layers
             // and re-attach all layers to the scene
             for(unsigned int i = 0; i < mLayers.size(); ++i) {
-                mLayers[i]->setLayerID(i);
-                mLayers[i]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
+                mLayers[i]->SetLayerID(i);
+                mLayers[i]->MovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
                 if(mSceneNode) {
                     String layerName = "SpacescapeLayer" + StringConverter::toString(i);
-                    mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[i]->getMovableObject());
+                    mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[i]->MovableObject());
                 }
             }
         }
@@ -931,7 +931,7 @@ namespace Ogre
                 root->InsertEndChild(layerNode);
 
                 // create all the layer data nodes
-                NameValuePairList pl = mLayer->getParams();
+                NameValuePairList pl = mLayer->Params();
                 NameValuePairList::iterator pli;
                 for(pli = pl.begin(); pli != pl.end(); pli++) {
                     tinyxml2::XMLElement* layerElem = config.NewElement(pli->first.c_str());
@@ -985,8 +985,8 @@ namespace Ogre
         // re-create all layers
         for(unsigned int i = 0; i < mLayers.size(); i++) {
             String layerName = mLayers[i]->getName();
-            int layerType = mLayers[i]->getLayerType();
-            NameValuePairList params = mLayers[i]->getParams();
+            int layerType = mLayers[i]->LayerType();
+            NameValuePairList params = mLayers[i]->Params();
             
             // detach old object from the layer scene node
             SceneNode* n =(SceneNode*)mSceneNode->getChild("SpacescapeLayer" + StringConverter::toString(i));
@@ -1006,14 +1006,14 @@ namespace Ogre
                 mLayers[i] = OGRE_NEW SpacescapeLayerPoints(layerName,this);
             }
             
-            mLayers[i]->setLayerID(i);
+            mLayers[i]->SetLayerID(i);
             // set hdr enabled before calling init
-            mLayers[i]->setHDREnabled(enabled);
-            mLayers[i]->init(params);
-            mLayers[i]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
+            mLayers[i]->SetHDREnabled(enabled);
+            mLayers[i]->Init(params);
+            mLayers[i]->MovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
             
             // attach the layer to the scene so it can be displayed
-            n->attachObject(mLayers[i]->getMovableObject());
+            n->attachObject(mLayers[i]->MovableObject());
         }
     }
     
@@ -1077,14 +1077,14 @@ namespace Ogre
         // has the layer type changed?
         String layerType = params.find("type") == params.end() ? "" : params.find("type")->second;
 
-        if(layerType != "" && layerType != mLayers[layerId]->getLayerTypeName()) {
+        if(layerType != "" && layerType != mLayers[layerId]->LayerTypeName()) {
             // destroy this layer and re-create in the same location with the new type
 
             String layerName = mLayers[layerId]->getName();
 
             // we need a writable version of params to copy some old params like the seed
             NameValuePairList newParams = params;
-            NameValuePairList oldParams = mLayers[layerId]->getParams();
+            NameValuePairList oldParams = mLayers[layerId]->Params();
 
             // detach old object from the layer scene node
             SceneNode* n =(SceneNode*)mSceneNode->getChild("SpacescapeLayer" + StringConverter::toString(layerId));
@@ -1105,7 +1105,7 @@ namespace Ogre
             }
 
             // set layer id
-            mLayers[layerId]->setLayerID(layerId);
+            mLayers[layerId]->SetLayerID(layerId);
 
             // copy the seed if not specified already
             if(newParams.find("seed") == newParams.end()) {
@@ -1113,15 +1113,15 @@ namespace Ogre
             }
 
             // init with the given params and set render queue
-            mLayers[layerId]->init(newParams);
-            mLayers[layerId]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + layerId);
+            mLayers[layerId]->Init(newParams);
+            mLayers[layerId]->MovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + layerId);
 
             // attach the layer to the scene so it can be displayed
-            n->attachObject(mLayers[layerId]->getMovableObject());
+            n->attachObject(mLayers[layerId]->MovableObject());
         }
         else {
             // run initialization again with given params
-            mLayers[layerId]->init(params);
+            mLayers[layerId]->Init(params);
         }
 
         return true;
@@ -1194,7 +1194,7 @@ namespace Ogre
 
         // tell all the layers to display high res versions
         for(unsigned int i = 0; i < mLayers.size(); i++) {
-            mLayers[i]->setDisplayHighRes(true);
+            mLayers[i]->SetDisplayHighRes(true);
         }
 
         // render to texture
@@ -1202,7 +1202,7 @@ namespace Ogre
 
         // tell all the layers to go back to low res displays
         for(unsigned int i = 0; i < mLayers.size(); i++) {
-            mLayers[i]->setDisplayHighRes(false);
+            mLayers[i]->SetDisplayHighRes(false);
         }
 
         return result;

@@ -52,12 +52,12 @@ namespace Ogre
        /** Get the layer type
         @return the layer type
         */
-        String getLayerTypeName(void) { return "points"; }
+        String LayerTypeName(void) { return "points"; }
 
         /** Get the layer type
         @return the layer type
         */
-        int getLayerType(void) { return SpacescapePlugin::SLT_POINTS; }
+        int LayerType(void) { return SpacescapePlugin::SLT_POINTS; }
 
         /** Initialize this layer based on the given params
         @remarks Params for this layer type are:
@@ -68,7 +68,7 @@ namespace Ogre
         pointSize - unsigned int (string i.e. "1")
         @param params Layer params that will be specific to the derived class
         */
-        void init(Ogre::NameValuePairList params);
+        void Init(Ogre::NameValuePairList params);
 
     protected:
         /** Utility function for updating saved params list

@@ -503,7 +503,7 @@ namespace Ogre
     texture - string (i.e. "my-flare.png")
     @param params Layer params that are specific to this class
     */
-    void SpacescapeLayerBillboards::init(Ogre::NameValuePairList params)
+    void SpacescapeLayerBillboards::Init(Ogre::NameValuePairList params)
     {
         bool shouldUpdate = false;
 

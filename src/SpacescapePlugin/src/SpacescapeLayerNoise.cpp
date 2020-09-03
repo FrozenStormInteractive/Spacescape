@@ -372,7 +372,7 @@ namespace Ogre
     sourceBlendFactor - string (i.e. one, dest_colour  etc.)
     @param params Layer params that will be specific to the derived class
     */
-    void SpacescapeLayerNoise::init(Ogre::NameValuePairList params)
+    void SpacescapeLayerNoise::Init(Ogre::NameValuePairList params)
     {
         bool shouldUpdate = false;
 

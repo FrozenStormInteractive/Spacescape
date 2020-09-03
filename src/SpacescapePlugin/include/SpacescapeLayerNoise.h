@@ -50,17 +50,17 @@ namespace Ogre
 
         /** Destructor
         */
-        ~SpacescapeLayerNoise(void);
+        ~SpacescapeLayerNoise();
 
        /** Get the layer type
         @return the layer type
         */
-        String getLayerTypeName(void) { return "noise"; }
+        String LayerTypeName() { return "noise"; }
 
         /** Get the layer type
         @return the layer type
         */
-        int getLayerType(void) { return SpacescapePlugin::SLT_NOISE; }
+        int LayerType() { return SpacescapePlugin::SLT_NOISE; }
 
         /** Initialize this layer based on the given params
         @remarks Params for this layer type are:
@@ -80,7 +80,7 @@ namespace Ogre
         sourceBlendFactor - string (i.e. one, dest_colour  etc.)
         @param params Layer params that will be specific to the derived class
         */
-        void init(Ogre::NameValuePairList params);
+        void Init(Ogre::NameValuePairList params);
 
         /** Set whether to display the high resolution implementation
         or the faster preview version
