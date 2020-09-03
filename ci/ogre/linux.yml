@@ -3,6 +3,8 @@ steps:
     displayName: 'Install dependencies'
 
   - template: ogre.yml
+    parameters:
+      cmakeGenerator: Ninja
 
   - publish: $(Build.ArtifactStagingDirectory)/Ogre.tar.gz
     artifact: OgreLinux

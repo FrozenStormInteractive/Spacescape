@@ -94,6 +94,8 @@ stages:
           vmImage: $(ImageName)
         steps:
           - template: ci/ogre/macos.yml
+            parameters:
+              xcodeVersion: $(XCodeVersion)
 
       - job: QtMacOS
         strategy:

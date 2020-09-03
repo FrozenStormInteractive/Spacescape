@@ -1,12 +1,19 @@
+parameters:
+  - name: xcodeVersion
+    displayName: XCode Version
+    type: string
+
 steps:
   - script: |
       /bin/bash -c "sudo xcode-select -s /Applications/Xcode_$(XCodeVersion).app/Contents/Developer"
-    displayName: 'Select Xcode $(XCodeVersion)'
+    displayName: Select Xcode $(XCodeVersion)
 
   - script: brew update && brew install freetype libzzip sdl2 pugixml freeimage openexr
-    displayName: 'Install ogre dependencies'
+    displayName: Install ogre dependencies
 
   - template: ogre.yml
+    parameters:
+      cmakeGenerator: Xcode
 
   - publish: $(Build.ArtifactStagingDirectory)/Ogre.tar.gz
     artifact: OgreMacOS
