@@ -8,7 +8,7 @@ steps:
 
   - task: DownloadPipelineArtifact@2
     inputs:
-      artifact: QtMacOS
+      artifact: OgreMacOS
       path: $(Agent.TempDirectory)
     displayName: 'Checkout Ogre'
 
