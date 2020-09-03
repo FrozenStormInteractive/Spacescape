@@ -4,6 +4,8 @@ project(tinyxml2)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(tinyxml2 STATIC tinyxml2.cpp tinyxml2.h)
 
 set_target_properties(tinyxml2 PROPERTIES
