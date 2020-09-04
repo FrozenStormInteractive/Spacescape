@@ -2,7 +2,7 @@ find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_subdirectory(external/QtPropertyBrowser5)
+find_package(OGRE 1.12 REQUIRED)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SpacescapeVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapeVersion.h)
 
@@ -49,4 +49,6 @@ IF(APPLE)
 ENDIF()
 
 install(TARGETS Spacescape
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE
+)

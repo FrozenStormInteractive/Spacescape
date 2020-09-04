@@ -1,5 +1,3 @@
-add_subdirectory(external/tinyxml2)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SpacescapePluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapePluginVersion.h)
 
 FILE(GLOB_RECURSE SPCPLG_SOURCES src/*.cpp)

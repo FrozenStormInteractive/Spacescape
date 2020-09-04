@@ -1,6 +1,9 @@
+cmake_minimum_required(VERSION 3.0)
 project(QtPropertyBrowser)
 
 include(GenerateExportHeader)
+
+message("${CMAKE_MODULE_PATH}")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
