@@ -13,7 +13,7 @@ steps:
   - task: ExtractFiles@1
     inputs:
       archiveFilePatterns: $(Agent.TempDirectory)/Ogre.tar.gz
-      destinationFolder: $(Build.SourcesDirectory)/libs
+      destinationFolder: $(Build.SourcesDirectory)/src/ThirdParty
       cleanDestinationFolder: false
     displayName: 'Extract Ogre'
 
@@ -26,7 +26,7 @@ steps:
   - task: ExtractFiles@1
     inputs:
       archiveFilePatterns: $(Agent.TempDirectory)/Qt.tar.gz
-      destinationFolder: $(Build.SourcesDirectory)/libs
+      destinationFolder: $(Build.SourcesDirectory)/src/ThirdParty
       cleanDestinationFolder: false
     displayName: 'Extract Qt'
 
