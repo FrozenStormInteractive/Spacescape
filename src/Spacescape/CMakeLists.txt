@@ -45,10 +45,10 @@ IF(APPLE)
     file(GLOB COPY_RESOURCES app/mac/*.cfg)
     set_target_properties(Spacescape PROPERTIES RESOURCE "${COPY_RESOURCES}")
     set_source_files_properties("${COPY_RESOURCES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    set_target_properties(Spacescape PROPERTIES XCODE_ATTRIBUTE_OGRE_SDK_ROOT)
+    set_target_properties(Spacescape PROPERTIES XCODE_ATTRIBUTE_OGRE_SDK_ROOT "${OGRE_FRAMEWORK_PATH}/../../../../")
 ENDIF()
 
 install(TARGETS Spacescape
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    BUNDLE
+    BUNDLE DESTINATION bundle
 )

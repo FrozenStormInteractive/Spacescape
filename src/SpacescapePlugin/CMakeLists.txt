@@ -17,9 +17,6 @@ set_target_properties(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape
 IF(WIN32)
     target_compile_definitions(SpacescapePlugin PUBLIC OGRE_SPACESCAPEPLUGIN_EXPORTS)
 ELSEIF(APPLE)
-    SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES VERSION ver1)
-    SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES FRAMEWORK TRUE)
-
     # Add the path where the Ogre framework was found
     if(NOT ${OGRE_FRAMEWORK_PATH} STREQUAL "")
       set_target_properties(SpacescapePlugin PROPERTIES
@@ -29,4 +26,6 @@ ELSEIF(APPLE)
     endif()
 ENDIF(WIN32)
 
-install(TARGETS SpacescapePlugin RUNTIME DESTINATION .)
+install(TARGETS SpacescapePlugin 
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
