@@ -1,7 +1,8 @@
+find_package(OGRE 1.12 REQUIRED)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SpacescapePluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SpacescapePluginVersion.h)
 
 FILE(GLOB_RECURSE SPCPLG_SOURCES src/*.cpp)
-
 FILE(GLOB_RECURSE SPCPLG_HEADERS include/*.h)
 
 aux_source_directory(src/ SPCPLG_SOURCES)

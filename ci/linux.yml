@@ -2,7 +2,11 @@ steps:
   - checkout: self
     submodules: true
 
+  - script: sudo apt-get update
+    displayName: Update dependency repositories
+
   - script: sudo apt-get install mesa-common-dev libglu1-mesa-dev libzzip-dev
+    displayName: Install dependencies
 
   - task: DownloadPipelineArtifact@2
     inputs:
